@@ -213,20 +213,58 @@
       background: none; border: 1px solid var(--border); border-radius: 1.4rem;
       padding: 0.4rem 0.9rem; color: var(--text); cursor: pointer; font-size: 0.8rem;
     }
-    .upgrade-container { display: flex; gap: 0.8rem; height: 100%; }
-    .upgrade-col { flex: 1; background: rgba(0,0,0,0.2); border-radius: 1rem; padding: 0.5rem; display: flex; flex-direction: column; }
-    .upgrade-items { flex: 1; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 0.4rem; align-content: flex-start; }
+    .upgrade-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      height: 100%;
+    }
+    .upgrade-panels {
+      display: flex;
+      gap: 0.8rem;
+      flex: 1;
+    }
+    .upgrade-col {
+      flex: 1;
+      background: rgba(0,0,0,0.2);
+      border-radius: 1rem;
+      padding: 0.5rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .upgrade-items {
+      flex: 1;
+      overflow-y: auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+      gap: 0.4rem;
+      align-content: flex-start;
+    }
     .liquid-circle {
-      width: 120px; height: 120px; border-radius: 50%; background: #333;
-      border: 6px solid rgba(255,255,255,0.3); position: relative; overflow: hidden; margin: 1rem auto;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: #333;
+      border: 6px solid rgba(255,255,255,0.3);
+      position: relative;
+      overflow: hidden;
+      margin: 0 auto;
     }
     .liquid-fill {
-      position: absolute; bottom: 0; width: 100%; background: #4caf50;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background: #4caf50;
       transition: height 0.5s ease;
     }
     .triangle-pointer {
-      position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
-      font-size: 2rem; color: #fff; filter: drop-shadow(0 0 4px black);
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2rem;
+      color: #fff;
+      filter: drop-shadow(0 0 4px black);
       transition: transform 0.1s linear;
     }
     .sell-all-btn { position: absolute; top: 0.5rem; right: 0.5rem; z-index: 5; }
@@ -278,7 +316,6 @@
 <div id="toastContainer"></div>
 <script>
 (() => {
-  // audio
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   function tone(f,t,d,v=0.05){ const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.type=t; o.frequency.value=f; g.gain.setValueAtTime(v,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+d); o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+d); }
   function sfxOpen(){ tone(500,'square',0.1); tone(800,'square',0.08,0.04); }
@@ -337,26 +374,25 @@
 
   const CASE_TYPES = [
     {id:'free',name:'Бесплатный',cost:0,minPrice:1,maxPrice:10,icon:'🎁'},
-    {id:'bronze',name:'Бронзовый',cost:50,minPrice:3,maxPrice:40,icon:'🥉'},
-    {id:'basic',name:'Базовый',cost:100,minPrice:5,maxPrice:80,icon:'📦'},
-    {id:'silver',name:'Серебряный',cost:200,minPrice:10,maxPrice:120,icon:'🥈'},
+    {id:'bronze',name:'Бронзовый',cost:50,minPrice:3,maxPrice:60,icon:'🥉'},
+    {id:'basic',name:'Базовый',cost:100,minPrice:5,maxPrice:120,icon:'📦'},
+    {id:'silver',name:'Серебряный',cost:200,minPrice:10,maxPrice:250,icon:'🥈'},
     {id:'advanced',name:'Продвинутый',cost:800,minPrice:20,maxPrice:2000,icon:'💼'},
-    {id:'gold',name:'Золотой',cost:1200,minPrice:30,maxPrice:350,icon:'🥇'},
-    {id:'platinum',name:'Платиновый',cost:2000,minPrice:40,maxPrice:800,icon:'🪩'},
-    {id:'luxury',name:'Люксовый',cost:3000,minPrice:50,maxPrice:1200,icon:'👑'},
-    {id:'diamond',name:'Алмазный',cost:5000,minPrice:60,maxPrice:2500,icon:'💎'},
-    {id:'crystal',name:'Хрустальный',cost:7000,minPrice:80,maxPrice:3500,icon:'🔮'},
-    {id:'mystic',name:'Мистический',cost:10000,minPrice:100,maxPrice:5000,icon:'🌀'},
-    {id:'premium',name:'Премиум',cost:15000,minPrice:150,maxPrice:8000,icon:'👁️'},
-    {id:'shadow',name:'Теневой',cost:18000,minPrice:200,maxPrice:10000,icon:'🌑'},
-    {id:'divine',name:'Божественный',cost:25000,minPrice:300,maxPrice:15000,icon:'☀️'},
-    {id:'infernal',name:'Инфернальный',cost:35000,minPrice:500,maxPrice:35000,icon:'👹'},
+    {id:'gold',name:'Золотой',cost:1200,minPrice:30,maxPrice:1500,icon:'🥇'},
+    {id:'platinum',name:'Платиновый',cost:2000,minPrice:40,maxPrice:2500,icon:'🪩'},
+    {id:'luxury',name:'Люксовый',cost:3000,minPrice:50,maxPrice:4000,icon:'👑'},
+    {id:'diamond',name:'Алмазный',cost:5000,minPrice:60,maxPrice:6000,icon:'💎'},
+    {id:'crystal',name:'Хрустальный',cost:7000,minPrice:80,maxPrice:8500,icon:'🔮'},
+    {id:'mystic',name:'Мистический',cost:10000,minPrice:100,maxPrice:12000,icon:'🌀'},
+    {id:'premium',name:'Премиум',cost:15000,minPrice:150,maxPrice:18000,icon:'👁️'},
+    {id:'shadow',name:'Теневой',cost:18000,minPrice:200,maxPrice:22000,icon:'🌑'},
+    {id:'divine',name:'Божественный',cost:25000,minPrice:300,maxPrice:30000,icon:'☀️'},
+    {id:'infernal',name:'Инфернальный',cost:35000,minPrice:500,maxPrice:45000,icon:'👹'},
     {id:'minecraft',name:'Майнкрафт',cost:1200,minPrice:50,maxPrice:800,icon:'⛏️'},
     {id:'cyberpunk',name:'Киберпанк',cost:5000,minPrice:200,maxPrice:3000,icon:'🤖'},
     {id:'pokemon',name:'Покемоны',cost:2200,minPrice:30,maxPrice:1500,icon:'⚡'},
     {id:'zelda',name:'Зельда',cost:4000,minPrice:100,maxPrice:2500,icon:'🗡️'},
     {id:'mario',name:'Марио',cost:800,minPrice:20,maxPrice:500,icon:'🍄'},
-    {id:'doom',name:'Дум',cost:7000,minPrice:300,maxPrice:5000,icon:'🔫'},
     {id:'halo',name:'Хало',cost:8500,minPrice:400,maxPrice:6000,icon:'🛡️'},
     {id:'witcher',name:'Ведьмак',cost:6000,minPrice:250,maxPrice:4500,icon:'🐺'},
     {id:'skyrim',name:'Скайрим',cost:5500,minPrice:200,maxPrice:4000,icon:'🐉'},
@@ -379,7 +415,7 @@
     {id:'bloodborne',name:'Бладборн',cost:9500,minPrice:450,maxPrice:7500,icon:'🩸'},
     {id:'sekiro',name:'Секиро',cost:8800,minPrice:400,maxPrice:6500,icon:'⚔️'},
     {id:'rdr2',name:'RDR2',cost:4200,minPrice:200,maxPrice:3200,icon:'🤠'},
-  ].sort((a,b)=>a.cost-b.cost);
+  ].filter(c => c.id !== 'doom').sort((a,b)=>a.cost-b.cost);
 
   function openCase(caseId){
     const cfg=CASE_TYPES.find(c=>c.id===caseId);
@@ -498,6 +534,15 @@
   function sellAll(){ confirmAction('Продать ВСЁ?',()=>{ GS.stars+=GS.inventory.reduce((s,g)=>s+g.price,0); GS.totalStarsEarned+=GS.inventory.reduce((s,g)=>s+g.price,0); GS.inventory=[]; save(); updateUI(); render('inventory'); }); }
   function sellCard(uid){ const i=GS.cardInventory.findIndex(c=>c.uid===uid); if(i>=0){ GS.stars+=GS.cardInventory[i].finalPrice; GS.totalStarsEarned+=GS.cardInventory[i].finalPrice; GS.cardInventory.splice(i,1); save(); updateUI(); } }
 
+  window.sellItem = (uid) => {
+    const gift = GS.inventory.find(g => g.uid === uid);
+    if (!gift) return;
+    confirmAction(`Продать ${gift.name} за ${gift.price}$?`, () => {
+      sellGift(uid);
+      render('inventory');
+    });
+  };
+
   function homePage(c){
     c.innerHTML = `<h3>Кейсы</h3><div class="grid-cases">${CASE_TYPES.map(cfg => `
       <div class="card">
@@ -547,22 +592,25 @@
   }
 
   function invPage(c){
-    c.innerHTML = `<div style="position:relative;"><h3>Инвентарь</h3><button class="btn btn-sm sell-all-btn" onclick="sellAll()">Продать всё</button><div class="grid-inv">${GS.inventory.map(g=>`<div class="card"><div class="gift-icon">${g.icon}</div>${g.name}<br><small>${g.price}$</small><br><button class="btn btn-sm" onclick="confirmAction('Продать ${g.name} за ${g.price}$?',()=>{sellGift('${g.uid}');render('inventory')})">Продать</button></div>`).join('')}</div><hr><h3>Карточки</h3><div class="grid-inv">${GS.cardInventory.map(c=>`<div class="card"><b>${c.giftName}</b><br>${c.bgName} x${c.bgMult} | ${c.patternName} x${c.patternMult}<br><b>${c.finalPrice}$</b><br><button class="btn btn-sm" onclick="confirmAction('Продать карточку за ${c.finalPrice}$?',()=>{sellCard('${c.uid}');render('inventory')})">Продать</button></div>`).join('')}</div></div>`;
+    c.innerHTML = `<div style="position:relative;"><h3>Инвентарь</h3><button class="btn btn-sm sell-all-btn" onclick="sellAll()">Продать всё</button><div class="grid-inv">${GS.inventory.map(g=>`<div class="card"><div class="gift-icon">${g.icon}</div>${g.name}<br><small>${g.price}$</small><br><button class="btn btn-sm" onclick="sellItem('${g.uid}')">Продать</button></div>`).join('')}</div><hr><h3>Карточки</h3><div class="grid-inv">${GS.cardInventory.map(c=>`<div class="card"><b>${c.giftName}</b><br>${c.bgName} x${c.bgMult} | ${c.patternName} x${c.patternMult}<br><b>${c.finalPrice}$</b><br><button class="btn btn-sm" onclick="confirmAction('Продать карточку за ${c.finalPrice}$?',()=>{sellCard('${c.uid}');render('inventory')})">Продать</button></div>`).join('')}</div></div>`;
   }
 
   function upgPage(c){
-    c.innerHTML = `<div class="upgrade-container">
-      <div class="upgrade-col"><h4>Ваши предметы</h4><div class="upgrade-items custom-scroll">${GS.inventory.map(g=>`<div class="card" style="cursor:pointer" onclick="selectUpgSrc('${g.uid}')"><div class="gift-icon">${g.icon}</div>${g.name}<br><small>${g.price}$</small></div>`).join('')}</div></div>
-      <div class="upgrade-col"><h4>Цель (дороже)</h4><div class="upgrade-items custom-scroll" id="upgTargetList"></div></div>
-    </div>
-    <div style="text-align:center;margin-top:0.5rem;">
-      <div id="upgChanceText" style="margin-bottom:0.5rem;">Выберите предмет</div>
-      <div class="liquid-circle" id="liquidCircle">
-        <div class="liquid-fill" id="liquidFill" style="height:0%"></div>
-        <div class="triangle-pointer" id="trianglePointer" style="top:-20px;">▼</div>
-      </div>
-      <button class="btn btn-accent" id="startUpgradeBtn" disabled>Улучшить</button>
-    </div>`;
+    c.innerHTML = `
+      <div class="upgrade-container">
+        <div style="text-align:center;">
+          <div id="upgChanceText" style="margin-bottom:0.5rem;">Выберите предмет</div>
+          <div class="liquid-circle" id="liquidCircle">
+            <div class="liquid-fill" id="liquidFill" style="height:0%"></div>
+            <div class="triangle-pointer" id="trianglePointer">▼</div>
+          </div>
+          <button class="btn btn-accent" id="startUpgradeBtn" disabled>Улучшить</button>
+        </div>
+        <div class="upgrade-panels">
+          <div class="upgrade-col"><h4>Ваши предметы</h4><div class="upgrade-items custom-scroll">${GS.inventory.map(g=>`<div class="card" style="cursor:pointer" onclick="selectUpgSrc('${g.uid}')"><div class="gift-icon">${g.icon}</div>${g.name}<br><small>${g.price}$</small></div>`).join('')}</div></div>
+          <div class="upgrade-col"><h4>Цель (дороже)</h4><div class="upgrade-items custom-scroll" id="upgTargetList"></div></div>
+        </div>
+      </div>`;
     window._upgSrc=null; window._upgTar=null;
     updateUpgTargetList();
     window.selectUpgSrc=(uid)=>{
@@ -585,7 +633,7 @@
     };
     function updateUpgTargetList(){
       const list=document.getElementById('upgTargetList');
-      if(!window._upgSrc){ list.innerHTML='<p>Выберите жертву слева</p>'; return; }
+      if(!window._upgSrc){ list.innerHTML='<p>Сначала выберите предмет слева</p>'; return; }
       const targets=GIFT_POOL.filter(g=>g.price>window._upgSrc.price).sort((a,b)=>a.price-b.price);
       list.innerHTML=targets.map(g=>`<div class="card" style="cursor:pointer" onclick="selectUpgTar('${g.id}')"><div class="gift-icon">${g.icon}</div>${g.name}<br><small>${g.price}$</small></div>`).join('');
     }
@@ -630,11 +678,25 @@
     c.innerHTML = `<h3>BattlePass</h3>
       <div class="bp-dual">
         <div class="bp-column"><h4>Обычный 🎟️</h4>${renderCol(false)}</div>
-        <div class="bp-column"><h4>Pro 🎫 ${!GS.hasProBP?`<button class="btn btn-sm btn-accent" onclick="activateProBP()">Активировать Pro</button>`:''}</h4>${renderCol(true)}</div>
+        <div class="bp-column"><h4>Pro 🎫</h4>${renderCol(true)}</div>
       </div>
-      <div style="margin-top:0.5rem;display:flex;gap:0.5rem;"><input id="promoCode" placeholder="Промокод" style="flex:1"><button class="btn btn-sm" onclick="applyPromo()">Применить код</button></div>`;
-    window.activateProBP=()=>{ if(GS.stars<5000) return showToast('❌ Нужно 5000$'); confirmAction('Купить Pro BP за 5000$?',()=>{ GS.stars-=5000; GS.hasProBP=true; GS.currentSeason=new Date().getFullYear()+'-'+(new Date().getMonth()+1); save(); updateUI(); showToast('✅ Pro BP активирован!'); render('battlepass'); }); };
-    window.applyPromo=()=>{ const code=document.getElementById('promoCode').value.trim().toUpperCase(); if(!code) return; if(GS.usedPromos.includes(code)) return showToast('❌ Код уже использован'); GS.hasProBP=true; GS.currentSeason=new Date().getFullYear()+'-'+(new Date().getMonth()+1); GS.usedPromos.push(code); save(); updateUI(); showToast('✅ Pro BP по промокоду!'); render('battlepass'); };
+      <div style="margin-top:0.5rem;display:flex;gap:0.5rem;">
+        <input id="promoCode" placeholder="Промокод" style="flex:1">
+        <button class="btn btn-sm" onclick="applyPromo()">Применить код</button>
+      </div>`;
+    window.applyPromo = () => {
+      const code = document.getElementById('promoCode').value.trim().toUpperCase();
+      if (!code) return showToast('Введите код');
+      if (GS.usedPromos.includes(code)) return showToast('Код уже использован');
+      const VALID_CODES = ['PRO2024', 'GIFT100', 'ELITE2025']; // сюда добавлять новые коды
+      if (!VALID_CODES.includes(code)) return showToast('Неверный код');
+      GS.hasProBP = true;
+      GS.currentSeason = new Date().getFullYear()+'-'+(new Date().getMonth()+1);
+      GS.usedPromos.push(code);
+      save(); updateUI();
+      showToast('✅ Pro BP активирован!');
+      render('battlepass');
+    };
   }
 
   function questPage(c){
