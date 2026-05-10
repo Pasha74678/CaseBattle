@@ -1,773 +1,406 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>NFT Battle — Gift Simulator</title>
-    <style>
-        :root {
-            --bg: #0e0e12;
-            --surface: #1a1a22;
-            --surface2: #24242e;
-            --border: rgba(255, 255, 255, 0.08);
-            --text: #e0e0e0;
-            --text2: #999;
-            --radius: 12px;
-            --shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
-            --transition: 0.2s ease;
-        }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-        }
-        #app {
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            position: relative;
-        }
-        @media (min-width: 768px) {
-            #app {
-                max-width: 960px;
-                height: 95vh;
-                border-radius: 20px;
-                margin: 0 auto;
-            }
-        }
-        header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 14px;
-            background: var(--surface2);
-            border-bottom: 1px solid var(--border);
-            flex-shrink: 0;
-            gap: 8px;
-            flex-wrap: wrap;
-            z-index: 10;
-            font-size: 13px;
-        }
-        header .balance span {
-            background: var(--surface);
-            padding: 4px 10px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            white-space: nowrap;
-            font-size: 12px;
-        }
-        #page {
-            flex: 1;
-            overflow-y: auto;
-            padding: 12px;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-        }
-        nav {
-            display: flex;
-            background: var(--surface2);
-            border-top: 1px solid var(--border);
-            flex-shrink: 0;
-            overflow-x: auto;
-            gap: 2px;
-            padding: 4px 6px;
-            z-index: 10;
-            -webkit-overflow-scrolling: touch;
-        }
-        nav button {
-            flex: 0 0 auto;
-            background: transparent;
-            border: none;
-            color: var(--text2);
-            padding: 8px 6px;
-            cursor: pointer;
-            font-size: 9px;
-            border-radius: 8px;
-            transition: var(--transition);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            min-width: 44px;
-            position: relative;
-        }
-        nav button.active {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .badge {
-            position: absolute;
-            top: 0;
-            right: 2px;
-            background: #fff;
-            color: #000;
-            font-size: 8px;
-            font-weight: bold;
-            padding: 1px 4px;
-            border-radius: 6px;
-            display: none;
-        }
-        .btn {
-            padding: 8px 14px;
-            border-radius: 20px;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 12px;
-            background: var(--surface);
-            color: var(--text);
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            white-space: nowrap;
-        }
-        .btn-accent {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.4);
-        }
-        .btn-sm {
-            padding: 4px 10px;
-            font-size: 10px;
-        }
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 10px;
-            transition: var(--transition);
-            position: relative;
-            word-break: break-word;
-            text-align: center;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-            gap: 8px;
-        }
-        @media (min-width: 768px) {
-            .grid {
-                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-            }
-            .gift-icon {
-                width: 52px;
-                height: 52px;
-                font-size: 28px;
-            }
-            .case-icon {
-                width: 60px;
-                height: 60px;
-                font-size: 32px;
-            }
-        }
-        .gift-icon {
-            width: 44px;
-            height: 44px;
-            margin: 0 auto;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .case-icon {
-            width: 52px;
-            height: 52px;
-            margin: 0 auto 6px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            position: relative;
-        }
-        .info-btn {
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: #fff;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            font-size: 11px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 2;
-        }
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.75);
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 20px;
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        .bp-track {
-            overflow-x: auto;
-            white-space: nowrap;
-            padding: 6px 0;
-            display: flex;
-            gap: 4px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-            -webkit-overflow-scrolling: touch;
-        }
-        .bp-seg {
-            flex: 0 0 auto;
-            width: 40px;
-            height: 50px;
-            border-radius: 8px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 9px;
-            color: var(--text2);
-            position: relative;
-        }
-        .bp-seg .reward-icon {
-            font-size: 14px;
-        }
-        .bp-seg.reached {
-            border-color: rgba(255, 255, 255, 0.4);
-            color: #fff;
-        }
-        .bp-seg.claimable {
-            border-color: #aaa;
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%,
-            100% {
-                box-shadow: 0 0 6px rgba(255, 255, 255, 0.2);
-            }
-            50% {
-                box-shadow: 0 0 18px rgba(255, 255, 255, 0.5);
-            }
-        }
-        .bp-seg.claimed {
-            background: #4a4;
-            border-color: #fff;
-            color: #000;
-        }
-        .chat-container {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-            padding: 8px;
-            margin-bottom: 8px;
-            font-size: 12px;
-        }
-        .chat-input {
-            display: flex;
-            gap: 6px;
-        }
-        input,
-        textarea {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 8px 12px;
-            color: #fff;
-            font-size: 13px;
-            outline: none;
-            width: 100%;
-        }
-        .toast {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            padding: 8px 18px;
-            border-radius: 20px;
-            z-index: 300;
-            font-size: 12px;
-            pointer-events: none;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>NFT Battle — Gift Simulator</title>
+  <style>
+    :root {
+      --bg: #0e0e12;
+      --surface: #1a1a22;
+      --surface2: #24242e;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e0e0e0;
+      --text2: #999;
+      --radius: 12px;
+      --shadow: 0 8px 30px rgba(0,0,0,0.6);
+      --transition: 0.2s ease;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #app {
+      width: 100vw; height: 100vh; display: flex; flex-direction: column;
+      background: var(--surface); border:1px solid var(--border);
+      box-shadow: var(--shadow); overflow: hidden; position: relative;
+    }
+    @media (min-width: 768px) { #app { max-width:960px; height:95vh; border-radius:20px; margin:0 auto; } }
+    header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:8px 12px; background:var(--surface2); border-bottom:1px solid var(--border);
+      flex-shrink:0; gap:6px; flex-wrap:wrap; z-index:10; font-size:12px;
+    }
+    header .balance span{ background:var(--surface); padding:4px 10px; border-radius:16px; border:1px solid var(--border); white-space:nowrap; font-size:11px; }
+    #page { flex:1; overflow-y:auto; padding:10px; scroll-behavior: smooth; -webkit-overflow-scrolling:touch; }
+    nav {
+      display:flex; background:var(--surface2); border-top:1px solid var(--border);
+      flex-shrink:0; overflow-x:auto; gap:2px; padding:6px 6px; z-index:10;
+    }
+    nav button {
+      flex:0 0 auto; background:transparent; border:none; color:var(--text2);
+      padding:10px 8px; cursor:pointer; font-size:11px; border-radius:10px;
+      transition:var(--transition); display:flex; flex-direction:column; align-items:center;
+      gap:4px; min-width:52px; position:relative;
+    }
+    nav button .nav-icon { font-size:20px; }
+    nav button.active { color:#fff; background:rgba(255,255,255,0.1); }
+    .badge {
+      position:absolute; top:0; right:2px; background:#fff; color:#000;
+      font-size:8px; font-weight:bold; padding:1px 4px; border-radius:6px; display:none;
+    }
+    .btn {
+      padding:8px 14px; border-radius:20px; border:1px solid var(--border);
+      cursor:pointer; font-weight:600; font-size:12px; background:var(--surface);
+      color:var(--text); display:inline-flex; align-items:center; gap:4px; white-space:nowrap;
+    }
+    .btn-accent { background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.4); }
+    .btn-sm { padding:5px 12px; font-size:10px; }
+    .card {
+      background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+      padding:10px; transition:var(--transition); position:relative; word-break:break-word; text-align:center;
+    }
+    .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); gap:8px; }
+    @media (min-width:768px) { .grid { grid-template-columns: repeat(auto-fill, minmax(115px, 1fr)); } }
+    .gift-icon {
+      width:44px; height:44px; margin:0 auto; border-radius:10px; display:flex;
+      align-items:center; justify-content:center; font-size:24px;
+      background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1);
+    }
+    .case-icon {
+      width:52px; height:52px; margin:0 auto 6px; border-radius:12px; display:flex;
+      align-items:center; justify-content:center; font-size:28px;
+      background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.2);
+    }
+    .info-btn {
+      position:absolute; top:6px; left:6px; background:rgba(0,0,0,0.7);
+      border:1px solid rgba(255,255,255,0.3); color:#fff; width:22px; height:22px;
+      border-radius:50%; font-size:12px; display:flex; align-items:center; justify-content:center;
+      cursor:pointer; z-index:2;
+    }
+    .modal-overlay {
+      position:fixed; top:0; left:0; width:100%; height:100%;
+      background:rgba(0,0,0,0.75); z-index:100; display:flex; align-items:center; justify-content:center;
+    }
+    .modal {
+      background:var(--surface2); border:1px solid var(--border); border-radius:16px;
+      padding:20px; max-width:400px; width:90%; text-align:center;
+      box-shadow:0 20px 50px rgba(0,0,0,0.7); max-height:80vh; overflow-y:auto;
+    }
+    .bp-track {
+      overflow-x:auto; white-space:nowrap; padding:8px 0; display:flex; gap:5px;
+      background:rgba(0,0,0,0.2); border-radius:8px;
+    }
+    .bp-seg {
+      flex:0 0 auto; width:42px; height:54px; border-radius:8px; background:var(--surface);
+      border:1px solid var(--border); display:flex; flex-direction:column; align-items:center;
+      justify-content:center; cursor:pointer; font-size:9px; color:var(--text2);
+    }
+    .bp-seg .reward-icon { font-size:16px; }
+    .bp-seg.reached { border-color:rgba(255,255,255,0.4); color:#fff; }
+    .bp-seg.claimable { border-color:#aaa; box-shadow:0 0 10px rgba(255,255,255,0.3); animation:pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{ box-shadow:0 0 6px rgba(255,255,255,0.2); } 50%{ box-shadow:0 0 20px rgba(255,255,255,0.5); } }
+    .bp-seg.claimed { background:#4a4; border-color:#fff; color:#000; }
+    .chat-container { display:flex; flex-direction:column; height:100%; }
+    .chat-messages { flex:1; overflow-y:auto; background:rgba(0,0,0,0.2); border-radius:8px; padding:8px; margin-bottom:8px; font-size:12px; }
+    .chat-input { display:flex; gap:6px; }
+    input, textarea {
+      background:rgba(255,255,255,0.05); border:1px solid var(--border);
+      border-radius:14px; padding:8px 12px; color:#fff; font-size:13px; outline:none; width:100%;
+    }
+    .toast {
+      position:fixed; top:20px; left:50%; transform:translateX(-50%); background:var(--surface2);
+      border:1px solid var(--border); padding:8px 18px; border-radius:20px; z-index:300;
+      font-size:12px; pointer-events:none;
+    }
+    .profile-btn { background: none; border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; color: var(--text); cursor: pointer; }
+  </style>
 </head>
 <body>
-    <div id="app">
-        <header>
-            <span style="font-weight:800;">⬡ NFT Battle</span>
-            <div class="balance" style="display:flex;gap:8px;">
-                <span>✦ <span id="starsDisp">500</span></span>
-                <span>⬢ <span id="tonDisp">50</span></span>
-                <span style="font-size:10px;">Ур.<span id="bpLevelDisp">1</span></span>
-            </div>
-        </header>
-        <div id="page"></div>
-        <nav id="nav">
-            <button data-page="home" class="active"><span>▣</span>Кейсы</button>
-            <button data-page="inventory"><span>⊡</span>Инвент</button>
-            <button data-page="upgrade"><span>△</span>Апгрейд</button>
-            <button data-page="fuse"><span>◈</span>Fuse</button>
-            <button data-page="battlepass"><span>▨</span>BP<span class="badge" id="bpBadge">0</span></button>
-            <button data-page="quests"><span>◷</span>Задания</button>
-            <button data-page="index"><span>▦</span>Индекс</button>
-            <button data-page="chat"><span>💬</span>Чат</button>
-        </nav>
+<div id="app">
+  <header>
+    <span style="font-weight:800;">⬡ NFT Battle</span>
+    <div class="balance" style="display:flex;gap:8px;">
+      <span>✦ <span id="starsDisp">500</span></span>
+      <span>⬢ <span id="tonDisp">50</span></span>
+      <span style="font-size:10px;">Ур.<span id="bpLevelDisp">1</span></span>
     </div>
-    <div id="modalContainer"></div>
-    <div id="toastContainer"></div>
-    <script>
-        (() => {
-            const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+    <button class="profile-btn" onclick="navigate('profile')">👤 <span id="nickDisplay">Гость</span></button>
+  </header>
+  <div id="page"></div>
+  <nav id="nav">
+    <button data-page="home" class="active"><span class="nav-icon">▣</span>Кейсы</button>
+    <button data-page="inventory"><span class="nav-icon">⊡</span>Инвент</button>
+    <button data-page="upgrade"><span class="nav-icon">△</span>Апгрейд</button>
+    <button data-page="fuse"><span class="nav-icon">◈</span>Fuse</button>
+    <button data-page="battlepass"><span class="nav-icon">▨</span>BP<span class="badge" id="bpBadge">0</span></button>
+    <button data-page="quests"><span class="nav-icon">◷</span>Задания</button>
+    <button data-page="index"><span class="nav-icon">▦</span>Индекс</button>
+    <button data-page="chat"><span class="nav-icon">💬</span>Чат</button>
+  </nav>
+</div>
+<div id="modalContainer"></div>
+<div id="toastContainer"></div>
+<script>
+(() => {
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  function tone(f,t,d,v=0.05){ const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.type=t; o.frequency.value=f; g.gain.setValueAtTime(v,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+d); o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+d); }
+  function sfxOpen(){ tone(500,'square',0.1); tone(800,'square',0.08,0.04); }
+  function sfxSuccess(){ tone(600,'triangle',0.1); tone(800,'triangle',0.08); }
+  function sfxClick(){ tone(700,'sine',0.04); }
 
-            function tone(f, t, d, v = 0.05) { const o = audioCtx.createOscillator(),
-                    g = audioCtx.createGain();
-                o.type = t;
-                o.frequency.value = f;
-                g.gain.setValueAtTime(v, audioCtx.currentTime);
-                g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + d);
-                o.connect(g);
-                g.connect(audioCtx.destination);
-                o.start();
-                o.stop(audioCtx.currentTime + d); }
+  const DEFAULT = { stars:500, ton:50, inventory:[], cardInventory:[], bpLevel:1, bpExp:0, bpClaimed:new Array(101).fill(false), activeQuests:[], questRefresh: Date.now()+10800000, pityCounters:{}, collectibles:{}, nickname:'', isGuest:true };
+  let GS = JSON.parse(JSON.stringify(DEFAULT));
+  GS.bpClaimed = new Array(101).fill(false);
+  try { const raw = localStorage.getItem('nft_save_v6'); if(raw) GS = Object.assign(DEFAULT, JSON.parse(raw)); } catch(e){}
+  if(!Array.isArray(GS.bpClaimed) || GS.bpClaimed.length<101) GS.bpClaimed = new Array(101).fill(false);
 
-            function sfxOpen() { tone(500, 'square', 0.1);
-                tone(800, 'square', 0.08, 0.04); }
+  function save(){ localStorage.setItem('nft_save_v6', JSON.stringify(GS)); }
+  function updateUI(){
+    document.getElementById('starsDisp').textContent = GS.stars;
+    document.getElementById('tonDisp').textContent = GS.ton;
+    document.getElementById('bpLevelDisp').textContent = GS.bpLevel;
+    document.getElementById('nickDisplay').textContent = GS.isGuest ? 'Гость' : GS.nickname;
+    const uncl = GS.bpClaimed.filter((c,i)=> i<=GS.bpLevel && i>0 && !c).length;
+    const badge = document.getElementById('bpBadge');
+    if(badge){ badge.textContent = uncl||''; badge.style.display = uncl?'block':'none'; }
+  }
 
-            function sfxSuccess() { tone(600, 'triangle', 0.1);
-                tone(800, 'triangle', 0.08); }
+  const RARITY_ORDER = ['common','uncommon','rare','epic','legendary'];
+  const RARITY_SELL = { common:30, uncommon:80, rare:200, epic:600, legendary:2500 };
+  const GIFT_POOL = [
+    { id:'c1', name:'Каменный талисман', rarity:'common', icon:'🪨', price:5 },
+    { id:'c2', name:'Лесной гриб', rarity:'common', icon:'🍄', price:8 },
+    { id:'c3', name:'Восковая свеча', rarity:'common', icon:'🕯️', price:10 },
+    { id:'c4', name:'Клевер удачи', rarity:'common', icon:'🍀', price:12 },
+    { id:'c5', name:'Морская ракушка', rarity:'common', icon:'🐚', price:15 },
+    { id:'u1', name:'Серебряный амулет', rarity:'uncommon', icon:'💠', price:40 },
+    { id:'u2', name:'Лунный камень', rarity:'uncommon', icon:'🔷', price:50 },
+    { id:'u3', name:'Зеркальный шар', rarity:'uncommon', icon:'🪩', price:60 },
+    { id:'u4', name:'Жемчужное ожерелье', rarity:'uncommon', icon:'📿', price:70 },
+    { id:'u5', name:'Изумруд', rarity:'uncommon', icon:'🪬', price:75 },
+    { id:'r1', name:'Золотой дракон', rarity:'rare', icon:'🐉', price:150 },
+    { id:'r2', name:'Единорог', rarity:'rare', icon:'🦄', price:180 },
+    { id:'r3', name:'Феникс', rarity:'rare', icon:'🐦‍🔥', price:220 },
+    { id:'r4', name:'Грифон', rarity:'rare', icon:'🦅', price:250 },
+    { id:'r5', name:'Василиск', rarity:'rare', icon:'🐍', price:280 },
+    { id:'e1', name:'Меч Света', rarity:'epic', icon:'⚔️', price:500 },
+    { id:'e2', name:'Щит Тьмы', rarity:'epic', icon:'🛡️', price:550 },
+    { id:'e3', name:'Корона Времени', rarity:'epic', icon:'👑', price:650 },
+    { id:'l1', name:'Звезда Абсолюта', rarity:'legendary', icon:'🌟', price:2000 },
+    { id:'l2', name:'Всевидящее Око', rarity:'legendary', icon:'👁️', price:2500 },
+  ];
+  const ALL_GIFTS = GIFT_POOL;
 
-            function sfxClick() { tone(700, 'sine', 0.04); }
-            const DEFAULT = { stars: 500, ton: 50, inventory: [], cardInventory: [], bpLevel: 1, bpExp: 0,
-                bpClaimed: new Array(101).fill(false), activeQuests: [], questRefresh: Date.now() + 10800000,
-                pityCounters: {}, collectibles: {}, nickname: 'Player' + Math.floor(Math.random() * 9000), isGuest: true };
-            let GS = JSON.parse(JSON.stringify(DEFAULT));
-            GS.bpClaimed = new Array(101).fill(false);
-            try { const raw = localStorage.getItem('nft_save_v5'); if (raw) GS = Object.assign(DEFAULT, JSON.parse(raw)); } catch (
-                e) {}
-            if (!Array.isArray(GS.bpClaimed) || GS.bpClaimed.length < 101) GS.bpClaimed = new Array(101).fill(false);
+  function randGiftByPrice(minP, maxP){
+    const pool = ALL_GIFTS.filter(g=> g.price >= minP && g.price <= maxP);
+    if(pool.length===0) return ALL_GIFTS[0];
+    return pool[Math.floor(Math.random()*pool.length)];
+  }
 
-            function save() { localStorage.setItem('nft_save_v5', JSON.stringify(GS)); }
+  const CASE_TYPES = [
+    { id:'free', name:'Бесплатный', cost:0, minPrice:1, maxPrice:25, icon:'🎁' },
+    { id:'bronze', name:'Бронзовый', cost:50, minPrice:1, maxPrice:40, icon:'🥉' },
+    { id:'basic', name:'Базовый', cost:100, minPrice:5, maxPrice:80, icon:'📦' },
+    { id:'silver', name:'Серебряный', cost:200, minPrice:10, maxPrice:100, icon:'🥈' },
+    { id:'advanced', name:'Продвинутый', cost:500, minPrice:20, maxPrice:200, icon:'🎁' },
+    { id:'gold', name:'Золотой', cost:800, minPrice:30, maxPrice:300, icon:'🥇' },
+    { id:'platinum', name:'Платиновый', cost:1500, minPrice:40, maxPrice:500, icon:'🪩' },
+    { id:'luxury', name:'Люксовый', cost:2000, minPrice:50, maxPrice:650, icon:'👑' },
+    { id:'diamond', name:'Алмазный', cost:3000, minPrice:60, maxPrice:800, icon:'💎' },
+    { id:'crystal', name:'Хрустальный', cost:5000, minPrice:80, maxPrice:1200, icon:'🔮' },
+    { id:'mystic', name:'Мистический', cost:8000, minPrice:100, maxPrice:1600, icon:'🌀' },
+    { id:'premium', name:'Премиум', cost:10000, minPrice:150, maxPrice:2000, icon:'👁️' },
+    { id:'shadow', name:'Теневой', cost:12000, minPrice:200, maxPrice:2500, icon:'🌑' },
+    { id:'divine', name:'Божественный', cost:20000, minPrice:300, maxPrice:3000, icon:'☀️' },
+    { id:'infernal', name:'Инфернальный', cost:25000, minPrice:500, maxPrice:5000, icon:'👹' },
+  ].sort((a,b)=> a.cost - b.cost);
 
-            function updateUI() {
-                document.getElementById('starsDisp').textContent = GS.stars;
-                document.getElementById('tonDisp').textContent = GS.ton;
-                document.getElementById('bpLevelDisp').textContent = GS.bpLevel;
-                const uncl = GS.bpClaimed.filter((c, i) => i <= GS.bpLevel && i > 0 && !c).length;
-                const badge = document.getElementById('bpBadge');
-                if (badge) { badge.textContent = uncl || '';
-                    badge.style.display = uncl ? 'block' : 'none'; }
-            }
-            const RARITY_ORDER = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
-            const RARITY_SELL = { common: 30, uncommon: 80, rare: 200, epic: 600, legendary: 2500 };
-            const GIFT_DATA = {
-                common: [
-                    ['🪨', 'Каменный талисман'],
-                    ['🍄', 'Лесной гриб'],
-                    ['🕯️', 'Восковая свеча'],
-                    ['🍀', 'Клевер удачи'],
-                    ['🐚', 'Морская ракушка'],
-                    ['⏳', 'Песочные часы'],
-                    ['🪶', 'Птичье перо'],
-                    ['🪙', 'Медная монета'],
-                    ['🔮', 'Хрустальный шар'],
-                    ['💎', 'Алмазная крошка'],
-                    ['🧲', 'Магнит'],
-                    ['🪤', 'Капкан'],
-                    ['🪸', 'Коралл'],
-                    ['🍂', 'Осенний лист'],
-                    ['❄️', 'Снежинка']
-                ],
-                uncommon: [
-                    ['💠', 'Серебряный амулет'],
-                    ['🔷', 'Лунный камень'],
-                    ['🪩', 'Зеркальный шар'],
-                    ['📿', 'Жемчужное ожерелье'],
-                    ['🪬', 'Изумруд'],
-                    ['🧿', 'Рубиновый глаз'],
-                    ['💍', 'Сапфир'],
-                    ['🪙', 'Золотая монета'],
-                    ['🏺', 'Античная ваза'],
-                    ['⚱️', 'Эфирный сосуд'],
-                    ['🦴', 'Кость дракона'],
-                    ['🪻', 'Фиалка'],
-                    ['🍯', 'Горшочек мёда'],
-                    ['🪶', 'Перо феникса'],
-                    ['🎭', 'Маска']
-                ],
-                rare: [
-                    ['🐉', 'Золотой дракон'],
-                    ['🦄', 'Единорог'],
-                    ['🐦‍🔥', 'Феникс'],
-                    ['🦅', 'Грифон'],
-                    ['🐍', 'Василиск'],
-                    ['🦑', 'Ктулху'],
-                    ['🐋', 'Левиафан'],
-                    ['🦂', 'Химера'],
-                    ['🦚', 'Павлин'],
-                    ['🦇', 'Ночной охотник'],
-                    ['🪨', 'Рунный камень'],
-                    ['🗡️', 'Кинжал']
-                ],
-                epic: [
-                    ['⚔️', 'Меч Света'],
-                    ['🛡️', 'Щит Тьмы'],
-                    ['👑', 'Корона Времени'],
-                    ['🪄', 'Посох Магии'],
-                    ['💀', 'Череп Пророка'],
-                    ['📯', 'Рог Судьбы'],
-                    ['🏆', 'Кубок Героя'],
-                    ['🔱', 'Трезубец']
-                ],
-                legendary: [
-                    ['🌟', 'Звезда Абсолюта'],
-                    ['👁️', 'Всевидящее Око'],
-                    ['🌌', 'Галактический Вихрь'],
-                    ['🐲', 'Вечный Дракон'],
-                    ['🪐', 'Планетарный Трон'],
-                    ['☄️', 'Комета']
-                ]
-            };
-            const ALL_GIFTS = [];
-            RARITY_ORDER.forEach(r => GIFT_DATA[r].forEach(([icon, name], i) => ALL_GIFTS.push({ id: `${r}_${i}`, name,
-                rarity: r, icon, sellPrice: RARITY_SELL[r] })));
+  function openCase(caseId){
+    const cfg = CASE_TYPES.find(c=>c.id===caseId);
+    if(!cfg || GS.stars < cfg.cost) return null;
+    if(cfg.cost>0) GS.stars -= cfg.cost;
+    const gift = { ...randGiftByPrice(cfg.minPrice, cfg.maxPrice), uid: Date.now()+Math.random().toString(36), obtainedAt: Date.now() };
+    GS.inventory.push(gift);
+    if(!GS.collectibles[gift.id]) GS.collectibles[gift.id]=0;
+    GS.collectibles[gift.id]++;
+    addBPExp(Math.floor(Math.max(10,cfg.cost/10)));
+    checkQuest('open_case');
+    if(gift.rarity==='legendary') checkQuest('get_legendary');
+    save(); updateUI(); return { gift, cfg };
+  }
 
-            function randGift(r) { const p = ALL_GIFTS.filter(g => g.rarity === r); return p[Math.floor(Math.random() * p
-                    .length)]; }
-            const CASE_TYPES = [
-                { id: 'bronze', name: 'Бронзовый', cost: 50, odds: { common: 65, uncommon: 22, rare: 9, epic: 3,
-                        legendary: 1 }, icon: '🥉' },
-                { id: 'basic', name: 'Базовый', cost: 100, odds: { common: 50, uncommon: 25, rare: 15, epic: 8,
-                    legendary: 2 }, icon: '📦' },
-                { id: 'silver', name: 'Серебряный', cost: 200, odds: { common: 45, uncommon: 30, rare: 15, epic: 8,
-                    legendary: 2 }, icon: '🥈' },
-                { id: 'advanced', name: 'Продвинутый', cost: 500, odds: { common: 40, uncommon: 28, rare: 18, epic: 10,
-                        legendary: 4 }, icon: '🎁' },
-                { id: 'gold', name: 'Золотой', cost: 800, odds: { common: 35, uncommon: 30, rare: 20, epic: 12,
-                    legendary: 3 }, icon: '🥇' },
-                { id: 'platinum', name: 'Платиновый', cost: 1500, odds: { common: 30, uncommon: 30, rare: 25, epic: 12,
-                        legendary: 3 }, icon: '🪩' },
-                { id: 'luxury', name: 'Люксовый', cost: 2000, odds: { common: 25, uncommon: 30, rare: 25, epic: 14,
-                        legendary: 6 }, icon: '👑' },
-                { id: 'diamond', name: 'Алмазный', cost: 3000, odds: { common: 20, uncommon: 28, rare: 30, epic: 18,
-                        legendary: 4 }, icon: '💠' },
-                { id: 'crystal', name: 'Хрустальный', cost: 5000, odds: { common: 15, uncommon: 25, rare: 30, epic: 22,
-                        legendary: 8 }, icon: '🔮' },
-                { id: 'mystic', name: 'Мистический', cost: 8000, odds: { common: 10, uncommon: 20, rare: 35, epic: 25,
-                        legendary: 10 }, icon: '🌀' },
-                { id: 'premium', name: 'Премиум', cost: 10000, odds: { common: 10, uncommon: 20, rare: 30, epic: 25,
-                        legendary: 15 }, icon: '💎' },
-                { id: 'shadow', name: 'Теневой', cost: 12000, odds: { common: 5, uncommon: 15, rare: 35, epic: 30,
-                        legendary: 15 }, icon: '🌑' },
-                { id: 'divine', name: 'Божественный', cost: 20000, odds: { common: 0, uncommon: 10, rare: 30, epic: 35,
-                        legendary: 25 }, icon: '☀️' },
-                { id: 'infernal', name: 'Инфернальный', cost: 25000, odds: { common: 0, uncommon: 5, rare: 25, epic: 35,
-                        legendary: 35 }, icon: '👹' }
-            ].sort((a, b) => a.cost - b.cost);
+  function addBPExp(amt){
+    GS.bpExp += amt;
+    while(GS.bpLevel<100 && GS.bpExp >= (350+GS.bpLevel*55)){ GS.bpExp -= (350+GS.bpLevel*55); GS.bpLevel++; }
+    save();
+  }
+  function claimBP(level){
+    if(level<1||level>100||level>GS.bpLevel||GS.bpClaimed[level]) return;
+    GS.bpClaimed[level]=true;
+    GS.stars += 40+level*8;
+    if(level%5===0) GS.inventory.push({...randGiftByPrice(30,150), uid:'bp'+Date.now(), obtainedAt:Date.now()});
+    if(level%10===0) GS.ton += 4+Math.floor(level/5);
+    save(); updateUI(); sfxSuccess(); showToast(`✅ Уровень ${level} получен!`); render('battlepass');
+  }
+  function generateQuests(){
+    GS.activeQuests = [
+      { id:'open_case', desc:'Открыть 3 кейса', target:3, progress:0, reward:{stars:200,exp:300} },
+      { id:'get_common', desc:'Получить 5 Common', target:5, progress:0, reward:{stars:150,exp:250} },
+      { id:'sell_gift', desc:'Продать 2 подарка', target:2, progress:0, reward:{stars:180,exp:280} },
+    ];
+    GS.questRefresh = Date.now()+10800000;
+    save();
+  }
+  function checkQuest(id){
+    if(!GS.activeQuests.length || Date.now()>GS.questRefresh) generateQuests();
+    const q = GS.activeQuests.find(q=>q.id===id && q.progress<q.target);
+    if(q){ q.progress++; if(q.progress>=q.target) showToast(`🎯 Задание готово: ${q.desc}`); }
+    save();
+  }
+  function completeQuest(index){
+    const q = GS.activeQuests[index];
+    if(!q||q.progress<q.target) return;
+    GS.stars += q.reward.stars; addBPExp(q.reward.exp);
+    GS.activeQuests.splice(index,1); save(); updateUI(); sfxSuccess(); showToast(`✅ +${q.reward.stars}✦`); render('quests');
+  }
+  function attemptUpgrade(gift, targetGift){
+    if(gift.price >= targetGift.price) return { error:'Цель должна быть дороже' };
+    const ratio = gift.price / targetGift.price;
+    let chance = Math.min(90, Math.floor(ratio*100));
+    if(chance<5) chance=5;
+    const success = Math.random()*100 < chance;
+    const idx = GS.inventory.findIndex(g=>g.uid===gift.uid);
+    if(idx<0) return { error:'Нет предмета' };
+    GS.inventory.splice(idx,1);
+    if(success){
+      const ng = { ...targetGift, uid: Date.now()+Math.random().toString(36), obtainedAt: Date.now() };
+      GS.inventory.push(ng); if(!GS.collectibles[ng.id]) GS.collectibles[ng.id]=0; GS.collectibles[ng.id]++;
+      addBPExp(150); save(); updateUI(); return { success:true, gift:ng };
+    } else { save(); updateUI(); return { success:false }; }
+  }
+  function showToast(msg){ const el=document.createElement('div'); el.className='toast'; el.textContent=msg; document.getElementById('toastContainer').appendChild(el); setTimeout(()=>el.remove(),2000); }
+  function modal(title,body,btns=[]){
+    const mc=document.getElementById('modalContainer');
+    mc.innerHTML=`<div class="modal-overlay" id="mo"><div class="modal"><h3>${title}</h3><div>${body}</div><div style="display:flex;gap:8px;justify-content:center;margin-top:12px;">${btns.map(b=>`<button class="btn ${b.cls||''}" id="mb_${b.id}">${b.text}</button>`).join('')}</div></div></div>`;
+    document.getElementById('mo').addEventListener('click',e=>{ if(e.target===document.getElementById('mo')) closeModal(); });
+    btns.forEach(b=>document.getElementById('mb_'+b.id).addEventListener('click',()=>{ b.cb(); closeModal(); }));
+  }
+  function closeModal(){ document.getElementById('modalContainer').innerHTML=''; }
 
-            function rollRarity(odds) { const r = Math.random() * 100;
-                let cum = 0; for (const rarity of RARITY_ORDER) { cum += odds[rarity] || 0; if (r <= cum) return rarity; } return 'common'; }
+  let currentPage='home';
+  function navigate(p){ currentPage=p; document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active')); document.querySelector(`nav button[data-page="${p}"]`)?.classList.add('active'); render(p); sfxClick(); }
+  function render(p){
+    if(!GS.activeQuests.length||Date.now()>GS.questRefresh) generateQuests();
+    const c=document.getElementById('page');
+    const pages={ home:homePage, inventory:invPage, upgrade:upgPage, fuse:fusePage, battlepass:bpPage, quests:questPage, index:idxPage, chat:chatPage, profile:profilePage };
+    (pages[p]||homePage)(c); updateUI();
+  }
+  function homePage(c){
+    c.innerHTML=`<h3>▣ Кейсы</h3><div class="grid">${CASE_TYPES.map(cfg=>`<div class="card"><span class="info-btn" onclick="event.stopPropagation();showCaseInfo('${cfg.id}')">i</span><div class="case-icon">${cfg.icon}</div><b>${cfg.name}</b><br><small>${cfg.cost===0?'Бесплатно':cfg.cost+'✦'}</small><br><button class="btn btn-accent btn-sm" onclick="openCaseUI('${cfg.id}')">Открыть</button></div>`).join('')}</div>`;
+  }
+  window.showCaseInfo = (id)=>{
+    const cfg = CASE_TYPES.find(c=>c.id===id);
+    const items = ALL_GIFTS.filter(g=>g.price>=cfg.minPrice&&g.price<=cfg.maxPrice).map(g=>`<div>${g.icon} ${g.name} (${g.rarity}) - ${g.price}✦</div>`).join('');
+    modal(cfg.name, `<small>${items||'Нет предметов'}</small>`, [{id:'close',text:'Закрыть',cb:()=>{}}]);
+  };
+  window.openCaseUI = (id)=>{
+    const res = openCase(id);
+    if(!res) return showToast('❌ Недостаточно звёзд');
+    modal('Результат', `<div style="font-size:40px;">${res.gift.icon}</div><b>${res.gift.name}</b><p>${res.gift.rarity} | ${res.gift.price}✦</p>`, [
+      {id:'sell',text:'Продать',cls:'btn-accent',cb:()=>{ sellGift(res.gift.uid); render('inventory'); }},
+      {id:'keep',text:'Оставить',cb:()=>sfxSuccess()}
+    ]);
+    sfxOpen();
+  };
+  function sellGift(uid){ const i=GS.inventory.findIndex(g=>g.uid===uid); if(i>=0){ GS.stars += GS.inventory[i].price; GS.inventory.splice(i,1); checkQuest('sell_gift'); save(); updateUI(); } }
+  function invPage(c){
+    c.innerHTML=`<h3>⊡ Инвентарь (${GS.inventory.length})</h3><button class="btn btn-sm" onclick="sellAll()">Продать всё</button><div class="grid">${GS.inventory.map(g=>`<div class="card"><div class="gift-icon">${g.icon}</div>${g.name}<br><small style="color:#aaa;">${g.price}✦</small><br><button class="btn btn-sm" onclick="sellGift('${g.uid}');render('inventory')">Продать</button></div>`).join('')}</div>`;
+  }
+  window.sellAll=()=>{ GS.stars += GS.inventory.reduce((s,g)=>s+g.price,0); GS.inventory=[]; save(); updateUI(); render('inventory'); };
+  function upgPage(c){
+    c.innerHTML=`<h3>△ Апгрейд</h3><p>Выберите предмет и цель дороже</p><div class="grid">${GS.inventory.map(g=>`<div class="card" onclick="selectUpgGift('${g.uid}')"><div class="gift-icon">${g.icon}</div>${g.name}<br><small>${g.price}✦</small></div>`).join('')}</div>`;
+    window._upgSource=null;
+    window.selectUpgGift=(uid)=>{
+      const g=GS.inventory.find(x=>x.uid===uid);
+      if(!g) return;
+      if(!window._upgSource){ window._upgSource=g; showToast(`Выбрано: ${g.name}. Выберите цель дороже.`); return; }
+      const res=attemptUpgrade(window._upgSource,g); window._upgSource=null;
+      if(res.error) return showToast('❌ '+res.error);
+      modal('Апгрейд', res.success?`✅ Получен: ${res.gift.icon} ${res.gift.name}`:'❌ Неудача',[{id:'ok',text:'OK',cb:()=>render('upgrade')}]);
+    };
+  }
+  function fusePage(c){
+    const grp={}; GS.inventory.forEach(g=>{ if(!grp[g.id]) grp[g.id]={...g,cnt:0}; grp[g.id].cnt++; });
+    const fus=Object.values(grp).filter(g=>g.cnt>=5);
+    c.innerHTML=`<h3>◈ Fuse</h3>${fus.map(g=>`<div class="card">${g.icon} ${g.name} x${g.cnt} <button class="btn btn-accent btn-sm" onclick="fuse('${g.id}')">Создать</button></div>`).join('')}<hr><b>Карточки (${GS.cardInventory.length})</b><div class="grid">${GS.cardInventory.map(c=>`<div class="card">${c.giftName}<br>${c.bgName} | ${c.finalPrice} TON</div>`).join('')}</div>`;
+    window.fuse=(id)=>{ const m=GS.inventory.filter(g=>g.id===id).slice(0,5); GS.inventory=GS.inventory.filter(g=>!m.map(x=>x.uid).includes(g.uid)); const card={uid:'c'+Date.now(),giftName:m[0].name,finalPrice:m[0].price,bgName:'Обычный',bgCol:'#888'}; GS.cardInventory.push(card); save(); updateUI(); sfxSuccess(); render('fuse'); };
+  }
+  function bpPage(c){
+    const uncl=GS.bpClaimed.map((cl,i)=>i<=GS.bpLevel&&i>0&&!cl);
+    c.innerHTML=`<h3>▨ BattlePass · Ур.${GS.bpLevel}</h3><div class="bp-track">${Array.from({length:100},(_,i)=>`<div class="bp-seg ${i+1<GS.bpLevel?'reached':''} ${i+1===GS.bpLevel?'current':''} ${uncl[i+1]?'claimable':''} ${GS.bpClaimed[i+1]?'claimed':''}" onclick="claimBP(${i+1})"><span class="reward-icon">${(i+1)%10===0?'⬢':(i+1)%5===0?'🎁':'✦'}</span>${i+1}</div>`).join('')}</div><p>${GS.bpExp} / ${350+GS.bpLevel*55} EXP</p>`;
+  }
+  function questPage(c){
+    c.innerHTML=`<h3>◷ Задания</h3>${GS.activeQuests.map((q,i)=>`<div class="card" style="opacity:${q.progress>=q.target?1:0.7};cursor:pointer;" onclick="completeQuest(${i})">${q.progress>=q.target?'✅':''} ${q.desc} (${q.progress}/${q.target}) +${q.reward.stars}✦</div>`).join('')}`;
+  }
+  function idxPage(c){ c.innerHTML=`<h3>▦ Индекс (${Object.keys(GS.collectibles).length}/${ALL_GIFTS.length})</h3><div class="grid">${ALL_GIFTS.map(g=>`<div class="card" style="opacity:${GS.collectibles[g.id]?1:0.3};">${g.icon}<br>${GS.collectibles[g.id]?g.name:'???'}</div>`).join('')}</div>`; }
 
-            function openCase(caseId) {
-                const cfg = CASE_TYPES.find(c => c.id === caseId);
-                if (!cfg || GS.stars < cfg.cost) return null;
-                GS.stars -= cfg.cost;
-                if (!GS.pityCounters[caseId]) GS.pityCounters[caseId] = 0;
-                GS.pityCounters[caseId]++;
-                let rarity = GS.pityCounters[caseId] >= 21 ? 'legendary' : rollRarity(cfg.odds);
-                if (rarity === 'legendary' || rarity === 'epic') GS.pityCounters[caseId] = 0;
-                const gift = { ...randGift(rarity), uid: Date.now() + Math.random().toString(36), obtainedAt: Date.now() };
-                GS.inventory.push(gift);
-                if (!GS.collectibles[gift.id]) GS.collectibles[gift.id] = 0;
-                GS.collectibles[gift.id]++;
-                addBPExp(Math.floor(cfg.cost / 10));
-                checkQuest('open_case');
-                if (rarity === 'legendary') checkQuest('get_legendary');
-                save();
-                updateUI();
-                return { gift, cfg };
-            }
+  const chatMessages=[];
+  let ws;
+  function connectChat(){
+    const protocol = location.protocol==='https:'?'wss:':'ws:';
+    try{ ws = new WebSocket(`${protocol}//${location.host}/ws`); ws.onmessage=e=>{ chatMessages.push(JSON.parse(e.data)); if(currentPage==='chat') render('chat'); }; ws.onclose=()=>setTimeout(connectChat,3000); }catch(e){ setTimeout(connectChat,3000); }
+  }
+  function sendMsg(text){
+    if(ws&&ws.readyState===WebSocket.OPEN) ws.send(JSON.stringify({nick:GS.nickname||'Гость',text}));
+    else{ chatMessages.push({nick:GS.nickname||'Гость',text}); if(currentPage==='chat') render('chat'); }
+  }
+  function chatPage(c){
+    c.innerHTML=`<div class="chat-container"><div class="chat-messages" id="chatBox">${chatMessages.map(m=>`<div><b>${m.nick}:</b> ${m.text}</div>`).join('')}</div><div class="chat-input"><input id="chatInput" placeholder="Сообщение..."><button class="btn btn-sm" onclick="sendChat()">➤</button></div></div>`;
+    document.getElementById('chatBox').scrollTop=9999;
+  }
+  window.sendChat=()=>{ const inp=document.getElementById('chatInput'); if(inp.value.trim()){ sendMsg(inp.value.trim()); inp.value=''; render('chat'); } };
 
-            function addBPExp(amt) {
-                GS.bpExp += amt;
-                while (GS.bpLevel < 100 && GS.bpExp >= (350 + GS.bpLevel * 55)) { GS.bpExp -= (350 + GS.bpLevel * 55);
-                    GS.bpLevel++; }
-                save();
-            }
+  function profilePage(c){
+    c.innerHTML = `<h3>👤 Профиль</h3>
+    <div class="card" style="margin-bottom:10px;"><b>Никнейм:</b> ${GS.isGuest?'Гость':GS.nickname}</div>
+    ${GS.isGuest?`
+    <div class="card"><h4>Регистрация</h4><input id="regNick" placeholder="Никнейм"><input id="regPass1" type="password" placeholder="Пароль"><input id="regPass2" type="password" placeholder="Повторите пароль"><button class="btn btn-accent btn-sm" onclick="doRegister()">Создать</button></div>
+    <div class="card" style="margin-top:10px;"><h4>Вход</h4><input id="loginNick" placeholder="Никнейм"><input id="loginPass" type="password" placeholder="Пароль"><button class="btn btn-accent btn-sm" onclick="doLogin()">Войти</button></div>
+    `:`<button class="btn" onclick="logout()">Выйти</button>`}`;
+  }
+  window.doRegister = ()=>{
+    const nick = document.getElementById('regNick')?.value.trim();
+    const p1 = document.getElementById('regPass1')?.value;
+    const p2 = document.getElementById('regPass2')?.value;
+    if(!nick||nick.length<3) return showToast('Никнейм от 3 символов');
+    if(p1.length<4||p1!==p2) return showToast('Пароли не совпадают или короткие');
+    GS.nickname = nick; GS.isGuest = false; save(); updateUI(); showToast('✅ Аккаунт создан!'); render('profile');
+  };
+  window.doLogin = ()=>{
+    const nick = document.getElementById('loginNick')?.value.trim();
+    const pass = document.getElementById('loginPass')?.value;
+    if(!nick||!pass) return showToast('Заполните поля');
+    GS.nickname = nick; GS.isGuest = false; save(); updateUI(); showToast('✅ Вход выполнен!'); render('profile');
+  };
+  window.logout = ()=>{ GS.isGuest=true; GS.nickname=''; save(); updateUI(); showToast('Вы вышли'); render('profile'); };
 
-            function claimBP(level) {
-                if (level < 1 || level > 100 || level > GS.bpLevel || GS.bpClaimed[level]) return;
-                GS.bpClaimed[level] = true;
-                GS.stars += 40 + level * 8;
-                if (level % 5 === 0) GS.inventory.push({ ...randGift('uncommon'), uid: 'bp' + Date.now(),
-                    obtainedAt: Date.now() });
-                if (level % 10 === 0) GS.ton += 4 + Math.floor(level / 5);
-                save();
-                updateUI();
-                sfxSuccess();
-                showToast(`✅ Уровень ${level} получен!`);
-                render('battlepass');
-            }
-
-            function generateQuests() {
-                GS.activeQuests = [
-                    { id: 'open_case', desc: 'Открыть 3 кейса', target: 3, progress: 0, reward: { stars: 200, exp: 300 } },
-                    { id: 'get_common', desc: 'Получить 5 Common', target: 5, progress: 0, reward: { stars: 150,
-                        exp: 250 } },
-                    { id: 'sell_gift', desc: 'Продать 2 подарка', target: 2, progress: 0, reward: { stars: 180,
-                    exp: 280 } },
-                ];
-                GS.questRefresh = Date.now() + 10800000;
-                save();
-            }
-
-            function checkQuest(id) {
-                if (!GS.activeQuests.length || Date.now() > GS.questRefresh) generateQuests();
-                const q = GS.activeQuests.find(q => q.id === id && q.progress < q.target);
-                if (q) { q.progress++; if (q.progress >= q.target) showToast(`🎯 Задание готово: ${q.desc}`); }
-                save();
-            }
-
-            function completeQuest(index) {
-                const q = GS.activeQuests[index];
-                if (!q || q.progress < q.target) return;
-                GS.stars += q.reward.stars;
-                addBPExp(q.reward.exp);
-                GS.activeQuests.splice(index, 1);
-                save();
-                updateUI();
-                sfxSuccess();
-                showToast(`✅ +${q.reward.stars}✦`);
-                render('quests');
-            }
-
-            function attemptUpgrade(gift, targetGift) {
-                if (gift.sellPrice >= targetGift.sellPrice) return { error: 'Цель должна быть дороже' };
-                const ratio = gift.sellPrice / targetGift.sellPrice;
-                let chance = Math.min(90, Math.floor(ratio * 100));
-                if (chance < 5) chance = 5;
-                const success = Math.random() * 100 < chance;
-                const idx = GS.inventory.findIndex(g => g.uid === gift.uid);
-                if (idx < 0) return { error: 'Нет предмета' };
-                GS.inventory.splice(idx, 1);
-                if (success) {
-                    const ng = { ...targetGift, uid: Date.now() + Math.random().toString(36), obtainedAt: Date.now() };
-                    GS.inventory.push(ng);
-                    if (!GS.collectibles[ng.id]) GS.collectibles[ng.id] = 0;
-                    GS.collectibles[ng.id]++;
-                    addBPExp(150);
-                    save();
-                    updateUI();
-                    return { success: true, gift: ng };
-                } else { save();
-                    updateUI(); return { success: false }; }
-            }
-
-            function showToast(msg) { const el = document.createElement('div');
-                el.className = 'toast';
-                el.textContent = msg;
-                document.getElementById('toastContainer').appendChild(el);
-                setTimeout(() => el.remove(), 2000); }
-
-            function modal(title, body, btns = []) {
-                const mc = document.getElementById('modalContainer');
-                mc.innerHTML =
-                    `<div class="modal-overlay" id="mo"><div class="modal"><h3>${title}</h3><div>${body}</div><div style="display:flex;gap:8px;justify-content:center;margin-top:12px;">${btns.map(b=>`<button class="btn ${b.cls||''}" id="mb_${b.id}">${b.text}</button>`).join('')}</div></div></div>`;
-                document.getElementById('mo').addEventListener('click', e => { if (e.target === document.getElementById('mo'))
-                        closeModal(); });
-                btns.forEach(b => document.getElementById('mb_' + b.id).addEventListener('click', () => { b.cb();
-                    closeModal(); }));
-            }
-
-            function closeModal() { document.getElementById('modalContainer').innerHTML = ''; }
-            let page = 'home';
-
-            function navigate(p) { page = p;
-                document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-                document.querySelector(`nav button[data-page="${p}"]`)?.classList.add('active');
-                render(p);
-                sfxClick(); }
-
-            function render(p) {
-                if (!GS.activeQuests.length || Date.now() > GS.questRefresh) generateQuests();
-                const c = document.getElementById('page');
-                const pages = { home: homePage, inventory: invPage, upgrade: upgPage, fuse: fusePage, battlepass: bpPage,
-                    quests: questPage, index: idxPage, chat: chatPage };
-                (pages[p] || homePage)(c);
-                updateUI();
-            }
-
-            function homePage(c) {
-                c.innerHTML =
-                    `<h3>▣ Кейсы</h3><div class="grid">${CASE_TYPES.map(cfg=>`<div class="card"><div class="case-icon">${cfg.icon}<span class="info-btn" onclick="event.stopPropagation();showCaseInfo('${cfg.id}')">i</span></div><b>${cfg.name}</b><br><small>${cfg.cost}✦</small><br><button class="btn btn-accent btn-sm" onclick="openCaseUI('${cfg.id}')">Открыть</button></div>`).join('')}</div>`;
-            }
-            window.showCaseInfo = (id) => {
-                const cfg = CASE_TYPES.find(c => c.id === id);
-                const items = RARITY_ORDER.flatMap(r => ALL_GIFTS.filter(g => g.rarity === r).map(g =>
-                    `<div>${g.icon} ${g.name} (${g.rarity} ${cfg.odds[g.rarity]}%) - ${g.sellPrice}✦</div>`)).join(
-                    '');
-                modal(cfg.name, `<small>${items}</small>`, [{ id: 'close', text: 'Закрыть', cb: () => {} }]);
-            };
-            window.openCaseUI = (id) => {
-                const res = openCase(id);
-                if (!res) return showToast('❌ Недостаточно звёзд');
-                modal('Результат', `<div style="font-size:40px;">${res.gift.icon}</div><b>${res.gift.name}</b><p>${res.gift.rarity} | ${res.gift.sellPrice}✦</p>`, [
-                    { id: 'sell', text: 'Продать', cls: 'btn-accent', cb: () => { sellGift(res.gift.uid);
-                            render('inventory'); } },
-                    { id: 'keep', text: 'Оставить', cb: () => sfxSuccess() }
-                ]);
-                sfxOpen();
-            };
-
-            function sellGift(uid) { const i = GS.inventory.findIndex(g => g.uid === uid); if (i >= 0) { GS.stars += GS
-                        .inventory[i].sellPrice;
-                    GS.inventory.splice(i, 1);
-                    checkQuest('sell_gift');
-                    save();
-                    updateUI(); } }
-
-            function invPage(c) {
-                c.innerHTML =
-                    `<h3>⊡ Инвентарь (${GS.inventory.length})</h3><button class="btn btn-sm" onclick="sellAll()">Продать всё</button><div class="grid">${GS.inventory.map(g=>`<div class="card"><div class="gift-icon">${g.icon}</div>${g.name}<br><small style="color:#aaa;">${g.sellPrice}✦</small><br><button class="btn btn-sm" onclick="sellGift('${g.uid}');render('inventory')">Продать</button></div>`).join('')}</div>`;
-            }
-            window.sellAll = () => { GS.stars += GS.inventory.reduce((s, g) => s + g.sellPrice, 0);
-                GS.inventory = [];
-                save();
-                updateUI();
-                render('inventory'); };
-
-            function upgPage(c) {
-                c.innerHTML = `<h3>△ Апгрейд</h3><p>Выберите предмет и цель дороже</p><div class="grid">${GS.inventory.map(g=>`<div class="card" onclick="selectUpgGift('${g.uid}')"><div class="gift-icon">${g.icon}</div>${g.name}<br><small>${g.sellPrice}✦</small></div>`).join('')}</div>`;
-                window._upgSource = null;
-                window.selectUpgGift = (uid) => {
-                    const g = GS.inventory.find(x => x.uid === uid);
-                    if (!g) return;
-                    if (!window._upgSource) { window._upgSource = g;
-                        showToast(`Выбрано: ${g.name}. Теперь выберите цель дороже.`); return; }
-                    const res = attemptUpgrade(window._upgSource, g);
-                    window._upgSource = null;
-                    if (res.error) return showToast('❌ ' + res.error);
-                    modal('Апгрейд', res.success ? `✅ Получен: ${res.gift.icon} ${res.gift.name}` : '❌ Неудача',
-                        [{ id: 'ok', text: 'OK', cb: () => render('upgrade') }]);
-                };
-            }
-
-            function fusePage(c) {
-                const grp = {};
-                GS.inventory.forEach(g => { if (!grp[g.id]) grp[g.id] = { ...g, cnt: 0 };
-                    grp[g.id].cnt++; });
-                const fus = Object.values(grp).filter(g => g.cnt >= 5);
-                c.innerHTML =
-                    `<h3>◈ Fuse</h3>${fus.map(g=>`<div class="card">${g.icon} ${g.name} x${g.cnt} <button class="btn btn-accent btn-sm" onclick="fuse('${g.id}')">Создать</button></div>`).join('')}<hr><b>Карточки (${GS.cardInventory.length})</b><div class="grid">${GS.cardInventory.map(c=>`<div class="card">${c.giftName}<br>${c.bgName} | ${c.finalPrice} TON</div>`).join('')}</div>`;
-                window.fuse = (id) => {
-                    const m = GS.inventory.filter(g => g.id === id).slice(0, 5);
-                    GS.inventory = GS.inventory.filter(g => !m.map(x => x.uid).includes(g.uid));
-                    const card = { uid: 'c' + Date.now(), giftName: m[0].name, finalPrice: m[0].sellPrice, bgName: 'Обычный',
-                        bgCol: '#888' };
-                    GS.cardInventory.push(card);
-                    save();
-                    updateUI();
-                    sfxSuccess();
-                    render('fuse');
-                };
-            }
-
-            function bpPage(c) {
-                const uncl = GS.bpClaimed.map((cl, i) => i <= GS.bpLevel && i > 0 && !cl);
-                c.innerHTML = `<h3>▨ BattlePass · Ур.${GS.bpLevel}</h3><div class="bp-track">${Array.from({length:100},(_,i)=>`<div class="bp-seg ${i+1<GS.bpLevel?'reached':''} ${i+1===GS.bpLevel?'current':''} ${uncl[i+1]?'claimable':''} ${GS.bpClaimed[i+1]?'claimed':''}" onclick="claimBP(${i+1})"><span class="reward-icon">${(i+1)%10===0?'⬢':(i+1)%5===0?'🎁':'✦'}</span>${i+1}</div>`).join('')}</div><p>${GS.bpExp} / ${350+GS.bpLevel*55} EXP</p>`;
-            }
-
-            function questPage(c) {
-                c.innerHTML =
-                    `<h3>◷ Задания</h3>${GS.activeQuests.map((q,i)=>`<div class="card" style="opacity:${q.progress>=q.target?1:0.7};cursor:pointer;" onclick="completeQuest(${i})">${q.progress>=q.target?'✅':''} ${q.desc} (${q.progress}/${q.target}) +${q.reward.stars}✦</div>`).join('')}`;
-            }
-
-            function idxPage(c) { c.innerHTML =
-                    `<h3>▦ Индекс (${Object.keys(GS.collectibles).length}/${ALL_GIFTS.length})</h3><div class="grid">${ALL_GIFTS.map(g=>`<div class="card" style="opacity:${GS.collectibles[g.id]?1:0.3};">${g.icon}<br>${GS.collectibles[g.id]?g.name:'???'}</div>`).join('')}</div>`; }
-
-            // ----- ЧАТ (Online) -----
-            const chatMessages = [];
-            let ws;
-
-            function connectChat() {
-                const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-                const host = location.host;
-                try {
-                    ws = new WebSocket(`${protocol}//${host}/ws`);
-                    ws.onmessage = (e) => { chatMessages.push(JSON.parse(e.data));
-                        renderChat(); };
-                    ws.onclose = () => setTimeout(connectChat, 3000);
-                } catch (e) { setTimeout(connectChat, 3000); }
-            }
-
-            function sendMsg(text) {
-                if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ nick: GS.nickname, text }));
-                else { chatMessages.push({ nick: GS.nickname, text });
-                    renderChat(); }
-            }
-
-            function chatPage(c) {
-                c.innerHTML = `<div class="chat-container"><div class="chat-messages" id="chatBox">${chatMessages.map(m=>`<div><b>${m.nick}:</b> ${m.text}</div>`).join('')}</div><div class="chat-input"><input id="chatInput" placeholder="Сообщение..."><button class="btn btn-sm" onclick="sendChat()">➤</button></div></div>`;
-                document.getElementById('chatBox').scrollTop = 9999;
-            }
-            window.sendChat = () => { const inp = document.getElementById('chatInput'); if (inp.value.trim()) { sendMsg(inp
-                        .value.trim());
-                    inp.value = '';
-                    render('chat'); } };
-            connectChat();
-            window.navigate = navigate;
-            window.claimBP = claimBP;
-            window.completeQuest = completeQuest;
-            window.render = render;
-            updateUI();
-            navigate('home');
-        })();
-    </script>
+  connectChat();
+  window.navigate = navigate;
+  window.claimBP = claimBP;
+  window.completeQuest = completeQuest;
+  updateUI();
+  navigate('home');
+})();
+</script>
 </body>
 </html>
