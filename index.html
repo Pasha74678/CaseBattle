@@ -16,6 +16,7 @@
       --shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
       --transition: 0.2s ease;
       --glow: 0 0 8px rgba(255, 255, 255, 0.3);
+      --danger: #ff5252;
     }
     * { margin:0; padding:0; box-sizing:border-box; }
     body {
@@ -35,14 +36,22 @@
       background: var(--surface); border:1px solid var(--border);
       box-shadow: var(--shadow); overflow: hidden; position: relative;
     }
-    @media (min-width: 768px) { #app { max-width:960px; height:95vh; border-radius:20px; margin:0 auto; } }
+    @media (min-width: 768px) {
+      #app { max-width:960px; height:95vh; border-radius:20px; margin:0 auto; }
+    }
     header {
       display:flex; align-items:center; justify-content:space-between;
       padding:8px 12px; background:var(--surface2); border-bottom:1px solid var(--border);
       flex-shrink:0; gap:8px; flex-wrap:wrap; z-index:10; font-size:12px;
     }
-    header .balance span { background:var(--surface); padding:5px 10px; border-radius:16px; border:1px solid var(--border); white-space:nowrap; font-size:11px; }
-    #page { flex:1; overflow-y:auto; padding:10px; scroll-behavior: smooth; -webkit-overflow-scrolling:touch; }
+    header .balance span {
+      background:var(--surface); padding:5px 10px; border-radius:16px;
+      border:1px solid var(--border); white-space:nowrap; font-size:11px;
+    }
+    #page {
+      flex:1; overflow-y:auto; padding:10px; scroll-behavior: smooth;
+      -webkit-overflow-scrolling:touch;
+    }
     nav {
       display:flex; background:var(--surface2); border-top:1px solid var(--border);
       flex-shrink:0; overflow-x:auto; padding:8px 8px; gap:10px; z-index:20;
@@ -59,10 +68,6 @@
       color:#fff; background:rgba(255,255,255,0.1);
       box-shadow: var(--glow);
     }
-    .badge {
-      position:absolute; top:0; right:2px; background:#fff; color:#000;
-      font-size:8px; font-weight:bold; padding:1px 4px; border-radius:6px; display:none;
-    }
     .btn {
       padding:8px 14px; border-radius:20px; border:1px solid var(--border);
       cursor:pointer; font-weight:600; font-size:12px; background:var(--surface);
@@ -74,8 +79,12 @@
       background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
       padding:10px; transition:var(--transition); position:relative; word-break:break-word; text-align:center;
     }
-    .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap:8px; }
-    @media (min-width:768px) { .grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); } }
+    .grid {
+      display:grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap:8px;
+    }
+    @media (min-width:768px) {
+      .grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+    }
     .gift-icon {
       width:44px; height:44px; margin:0 auto; border-radius:10px; display:flex;
       align-items:center; justify-content:center; font-size:24px;
@@ -130,12 +139,33 @@
       flex:0 0 auto; width:42px; height:54px; border-radius:8px; background:var(--surface);
       border:1px solid var(--border); display:flex; flex-direction:column; align-items:center;
       justify-content:center; cursor:pointer; font-size:9px; color:var(--text2);
+      transition: 0.2s;
     }
     .bp-seg .reward-icon { font-size:16px; }
     .bp-seg.reached { border-color:rgba(255,255,255,0.4); color:#fff; }
-    .bp-seg.claimable { border-color:#aaa; box-shadow:0 0 10px rgba(255,255,255,0.3); animation:pulse 2s infinite; }
-    @keyframes pulse { 0%,100%{ box-shadow:0 0 6px rgba(255,255,255,0.2); } 50%{ box-shadow:0 0 20px rgba(255,255,255,0.5); } }
-    .bp-seg.claimed { background:#4a4; border-color:#fff; color:#000; }
+    .bp-seg.claimable {
+      border-color:#aaa;
+      box-shadow:0 0 10px rgba(255,255,255,0.3);
+      animation:pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100%{ box-shadow:0 0 6px rgba(255,255,255,0.2); }
+      50%{ box-shadow:0 0 20px rgba(255,255,255,0.5); }
+    }
+    .bp-seg.claimed {
+      opacity: 0.4; filter: brightness(0.7);
+      border-color: #666;
+    }
+    .quest-completed {
+      border: 2px solid #fff;
+      box-shadow: 0 0 12px rgba(255,255,255,0.8);
+    }
+    .sell-all-btn {
+      position: absolute; top: 10px; right: 10px; z-index: 5;
+    }
+    .inventory-container {
+      position: relative;
+    }
     .chat-container { display:flex; flex-direction:column; height:100%; }
     .chat-messages { flex:1; overflow-y:auto; background:rgba(0,0,0,0.2); border-radius:8px; padding:8px; margin-bottom:8px; font-size:12px; }
     .chat-input { display:flex; gap:6px; }
@@ -148,14 +178,20 @@
       border:1px solid var(--border); padding:8px 18px; border-radius:20px; z-index:300;
       font-size:12px; pointer-events:none;
     }
-    .profile-btn { background: none; border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; color: var(--text); cursor: pointer; }
-    .stat-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); }
+    .profile-btn {
+      background: none; border: 1px solid var(--border); border-radius: 20px;
+      padding: 4px 12px; color: var(--text); cursor: pointer;
+    }
+    .stat-item {
+      display: flex; justify-content: space-between; padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+    }
   </style>
 </head>
 <body>
 <div id="app">
   <header>
-    <span style="font-weight:800;">⬡ NFT Battle</span>
+    <span style="font-weight:800;">NFT Battle</span>
     <div class="balance" style="display:flex;gap:8px;">
       <span>$ <span id="starsDisp">500</span></span>
       <span>* <span id="tonDisp">50</span></span>
@@ -165,78 +201,76 @@
   </header>
   <div id="page"></div>
   <nav id="nav">
-    <button data-page="home" class="active"><span class="nav-icon">▣</span>Case</button>
-    <button data-page="inventory"><span class="nav-icon">⊡</span>Inv</button>
-    <button data-page="upgrade"><span class="nav-icon">△</span>Upgrade</button>
+    <button data-page="home" class="active"><span class="nav-icon">▣</span>Кейсы</button>
+    <button data-page="inventory"><span class="nav-icon">⊡</span>Инвентарь</button>
+    <button data-page="upgrade"><span class="nav-icon">△</span>Улучшение</button>
     <button data-page="fuse"><span class="nav-icon">◈</span>Fuse</button>
-    <button data-page="battlepass"><span class="nav-icon">▨</span>BP<span class="badge" id="bpBadge">0</span></button>
-    <button data-page="quests"><span class="nav-icon">◷</span>Task</button>
-    <button data-page="index"><span class="nav-icon">▦</span>Index</button>
-    <button data-page="chat"><span class="nav-icon">💬</span>Chat</button>
+    <button data-page="battlepass"><span class="nav-icon">▨</span>BP</button>
+    <button data-page="quests"><span class="nav-icon">◷</span>Задания</button>
+    <button data-page="index"><span class="nav-icon">▦</span>Индекс</button>
+    <button data-page="chat"><span class="nav-icon">💬</span>Чат</button>
   </nav>
 </div>
 <div id="modalContainer"></div>
 <div id="toastContainer"></div>
 <script>
 (() => {
-  // Audio context
+  // Audio
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   function tone(f,t,d,v=0.05){ const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.type=t; o.frequency.value=f; g.gain.setValueAtTime(v,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+d); o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+d); }
   function sfxOpen(){ tone(500,'square',0.1); tone(800,'square',0.08,0.04); }
   function sfxSuccess(){ tone(600,'triangle',0.1); tone(800,'triangle',0.08); }
   function sfxClick(){ tone(700,'sine',0.04); }
 
-  // Game state
+  // --- Game State ---
   const DEFAULT = {
     stars: 500, ton: 50, inventory: [], cardInventory: [],
     bpLevel: 1, bpExp: 0, bpClaimed: new Array(101).fill(false),
     activeQuests: [], questRefresh: Date.now()+10800000,
     pityCounters: {}, collectibles: {},
     nickname: '', isGuest: true,
-    totalCasesOpened: 0, totalStarsEarned: 500, totalTonEarned: 50
+    totalCasesOpened: 0, totalStarsEarned: 500, totalTonEarned: 50,
+    twoFactorEnabled: false, twoFactorCode: '',
+    upgradeStreak: 0, suspiciousFlags: 0
   };
   let GS = JSON.parse(JSON.stringify(DEFAULT));
   GS.bpClaimed = new Array(101).fill(false);
   try {
-    const raw = localStorage.getItem('nft_save_v7');
+    const raw = localStorage.getItem('nft_save_secure');
     if(raw) { const parsed = JSON.parse(raw); GS = Object.assign(GS, parsed); }
   } catch(e){}
   if(!Array.isArray(GS.bpClaimed) || GS.bpClaimed.length<101) GS.bpClaimed = new Array(101).fill(false);
 
-  function save(){ localStorage.setItem('nft_save_v7', JSON.stringify(GS)); }
+  function save(){ localStorage.setItem('nft_save_secure', JSON.stringify(GS)); }
   function updateUI(){
     document.getElementById('starsDisp').textContent = GS.stars;
     document.getElementById('tonDisp').textContent = GS.ton;
     document.getElementById('bpLevelDisp').textContent = GS.bpLevel;
     document.getElementById('nickDisplay').textContent = GS.isGuest ? 'Гость' : GS.nickname;
-    const uncl = GS.bpClaimed.filter((c,i)=> i<=GS.bpLevel && i>0 && !c).length;
-    const badge = document.getElementById('bpBadge');
-    if(badge){ badge.textContent = uncl||''; badge.style.display = uncl?'block':'none'; }
   }
 
-  // Gift pool
-  const GIFT_POOL = [
-    { id:'c1', name:'Каменный талисман', rarity:'common', icon:'🪨', price:5 },
-    { id:'c2', name:'Лесной гриб', rarity:'common', icon:'🍄', price:8 },
-    { id:'c3', name:'Восковая свеча', rarity:'common', icon:'🕯️', price:10 },
-    { id:'c4', name:'Клевер удачи', rarity:'common', icon:'🍀', price:12 },
-    { id:'c5', name:'Морская ракушка', rarity:'common', icon:'🐚', price:15 },
-    { id:'u1', name:'Серебряный амулет', rarity:'uncommon', icon:'💠', price:40 },
-    { id:'u2', name:'Лунный камень', rarity:'uncommon', icon:'🔷', price:50 },
-    { id:'u3', name:'Зеркальный шар', rarity:'uncommon', icon:'🪩', price:60 },
-    { id:'u4', name:'Жемчужное ожерелье', rarity:'uncommon', icon:'📿', price:70 },
-    { id:'u5', name:'Изумруд', rarity:'uncommon', icon:'🪬', price:75 },
-    { id:'r1', name:'Золотой дракон', rarity:'rare', icon:'🐉', price:150 },
-    { id:'r2', name:'Единорог', rarity:'rare', icon:'🦄', price:180 },
-    { id:'r3', name:'Феникс', rarity:'rare', icon:'🐦‍🔥', price:220 },
-    { id:'r4', name:'Грифон', rarity:'rare', icon:'🦅', price:250 },
-    { id:'r5', name:'Василиск', rarity:'rare', icon:'🐍', price:280 },
-    { id:'e1', name:'Меч Света', rarity:'epic', icon:'⚔️', price:500 },
-    { id:'e2', name:'Щит Тьмы', rarity:'epic', icon:'🛡️', price:550 },
-    { id:'e3', name:'Корона Времени', rarity:'epic', icon:'👑', price:650 },
-    { id:'l1', name:'Звезда Абсолюта', rarity:'legendary', icon:'🌟', price:2000 },
-    { id:'l2', name:'Всевидящее Око', rarity:'legendary', icon:'👁️', price:2500 },
-  ];
+  // --- Items Pool (100+ items) ---
+  const GIFT_POOL = [];
+  const rarities = ['common','uncommon','rare','epic','legendary'];
+  const iconsBase = ['🪨','🍄','🕯️','🍀','🐚','⏳','🪙','💎','🧲','🪤','🪸','🍂','❄️','💠','🔷','🪩','📿','🪬','🧿','💍','🏺','⚱️','🦴','🪻','🍯','🎭','🐉','🦄','🐦‍🔥','🦅','🐍','🦑','🐋','🦂','⚔️','🛡️','👑','🪄','💀','📯','🏆','🔱','🌟','👁️','🌌','🐲','🪐','☄️','🔮','🌀','🍀','🥚','🧩','🎲','🎯','🧿'];
+  const names = ['Stone','Shroom','Candle','Clover','Shell','Hourglass','Coin','Gem','Magnet','Trap','Coral','Leaf','Snow','Amulet','Moon','Mirror','Necklace','Emerald','Ruby','Ring','Vase','Bottle','Bone','Violet','Honey','Mask','Dragon','Unicorn','Phoenix','Griffin','Basilisk','Kraken','Whale','Chimera','Sword','Shield','Crown','Staff','Skull','Horn','Cup','Trident','Star','Eye','Galaxy','Dragon','Planet','Comet','Crystal','Spiral','Egg','Puzzle','Dice','Bullseye','Relic'];
+  // Generate 100 items
+  for (let i=0; i<100; i++) {
+    let rarity = rarities[Math.floor(Math.random() * rarities.length)];
+    let price = 0;
+    if(rarity==='common') price = Math.floor(Math.random()*20)+5;
+    else if(rarity==='uncommon') price = Math.floor(Math.random()*50)+40;
+    else if(rarity==='rare') price = Math.floor(Math.random()*200)+150;
+    else if(rarity==='epic') price = Math.floor(Math.random()*500)+500;
+    else price = Math.floor(Math.random()*1500)+2000;
+    GIFT_POOL.push({
+      id: `item_${i}`,
+      name: names[i%names.length] + (i>names.length?` ${Math.floor(i/names.length)}`:''),
+      rarity, icon: iconsBase[i%iconsBase.length], price
+    });
+  }
+  // Ensure unique ids
+  GIFT_POOL.forEach((g,i)=> g.id = `item_${i}`);
 
   function randGiftByPrice(minP, maxP){
     const pool = GIFT_POOL.filter(g=> g.price >= minP && g.price <= maxP);
@@ -244,6 +278,7 @@
     return pool[Math.floor(Math.random()*pool.length)];
   }
 
+  // Case definitions (including 6 new)
   const CASE_TYPES = [
     { id:'free', name:'Бесплатный', cost:0, minPrice:1, maxPrice:25, icon:'🎁' },
     { id:'bronze', name:'Бронзовый', cost:50, minPrice:1, maxPrice:40, icon:'🥉' },
@@ -260,6 +295,13 @@
     { id:'shadow', name:'Теневой', cost:12000, minPrice:200, maxPrice:2500, icon:'🌑' },
     { id:'divine', name:'Божественный', cost:20000, minPrice:300, maxPrice:3000, icon:'☀️' },
     { id:'infernal', name:'Инфернальный', cost:25000, minPrice:500, maxPrice:5000, icon:'👹' },
+    // new ones
+    { id:'elite', name:'Элитный', cost:6000, minPrice:200, maxPrice:2000, icon:'🏅' },
+    { id:'royal', name:'Королевский', cost:9000, minPrice:300, maxPrice:2500, icon:'🤴' },
+    { id:'fog', name:'Туманный', cost:4000, minPrice:100, maxPrice:1500, icon:'🌫️' },
+    { id:'pearl', name:'Жемчужный', cost:2500, minPrice:70, maxPrice:900, icon:'🦪' },
+    { id:'galactic', name:'Галактический', cost:15000, minPrice:500, maxPrice:4000, icon:'🌌' },
+    { id:'fantasy', name:'Фантастический', cost:18000, minPrice:600, maxPrice:5000, icon:'🧙' }
   ].sort((a,b)=> a.cost - b.cost);
 
   function openCase(caseId){
@@ -319,15 +361,37 @@
     if(!q||q.progress<q.target) return;
     GS.stars += q.reward.stars; GS.totalStarsEarned += q.reward.stars;
     addBPExp(q.reward.exp);
-    GS.activeQuests.splice(index,1); save(); updateUI(); sfxSuccess(); showToast(`✅ +${q.reward.stars}$`); render('quests');
+    GS.activeQuests.splice(index,1); save(); updateUI(); sfxSuccess(); showToast(`✔ +${q.reward.stars}$`); render('quests');
   }
 
+  // --- Security helpers ---
+  function confirmAction(msg, callback){
+    modal('⚠️ Подтверждение', `<p>${msg}</p>`, [
+      {id:'yes', text:'Да', cls:'btn-accent', cb: callback},
+      {id:'no', text:'Отмена', cb:()=>{}}
+    ]);
+  }
+
+  function detectSuspicious(){
+    if(GS.upgradeStreak > 5) {
+      showToast('🚨 Подозрительная активность! Улучшения временно заблокированы.');
+      GS.suspiciousFlags++;
+      GS.upgradeStreak = 0;
+      save();
+      return true;
+    }
+    return false;
+  }
+
+  // --- Upgrade Mechanic ---
   function attemptUpgrade(gift, targetGift){
     if(gift.price >= targetGift.price) return { error:'Цель должна быть дороже' };
     const ratio = gift.price / targetGift.price;
     let chance = Math.min(90, Math.floor(ratio*100));
     if(chance<5) chance=5;
     const success = Math.random()*100 < chance;
+    if(success) GS.upgradeStreak++; else GS.upgradeStreak = 0;
+    if(detectSuspicious()) return { error: 'Действие заблокировано античитом.' };
     const idx = GS.inventory.findIndex(g=>g.uid===gift.uid);
     if(idx<0) return { error:'Нет предмета' };
     GS.inventory.splice(idx,1);
@@ -341,8 +405,52 @@
     } else { save(); updateUI(); return { success:false }; }
   }
 
-  function showToast(msg){ const el=document.createElement('div'); el.className='toast'; el.textContent=msg; document.getElementById('toastContainer').appendChild(el); setTimeout(()=>el.remove(),2000); }
+  // Fuse backgrounds & patterns
+  const BG_TYPES = [
+    { name:'Обычный', mult:1, chance:0.7 },
+    { name:'Редкий', mult:3, chance:0.2 },
+    { name:'Эпический', mult:5, chance:0.08 },
+    { name:'Легендарный', mult:10, chance:0.02 }
+  ];
+  const PATTERN_TYPES = [
+    { name:'Без узора', mult:1, chance:0.6 },
+    { name:'Геометрический', mult:2, chance:0.25 },
+    { name:'Золотой', mult:4, chance:0.1 },
+    { name:'Мистический', mult:7, chance:0.05 }
+  ];
 
+  function fuseGifts(giftId){
+    const sameItems = GS.inventory.filter(g=>g.id===giftId);
+    if(sameItems.length < 5) return { error:'Нужно 5 одинаковых предметов' };
+    const selected = sameItems.slice(0,5);
+    const basePrice = Math.floor(selected.reduce((sum,g)=>sum+g.price,0)/5);
+    // remove from inventory
+    GS.inventory = GS.inventory.filter(g=> !selected.some(s=>s.uid===g.uid));
+    const bg = weightedRandom(BG_TYPES);
+    const pattern = weightedRandom(PATTERN_TYPES);
+    const finalPrice = Math.floor(basePrice * bg.mult * pattern.mult);
+    const card = {
+      uid: 'card_'+Date.now(),
+      giftName: selected[0].name,
+      basePrice, bgName: bg.name, bgMult: bg.mult,
+      patternName: pattern.name, patternMult: pattern.mult,
+      finalPrice
+    };
+    GS.cardInventory.push(card);
+    addBPExp(200);
+    save(); updateUI();
+    return { success:true, card };
+  }
+
+  function weightedRandom(arr){
+    let r = Math.random();
+    let cum = 0;
+    for(let item of arr){ cum += item.chance; if(r <= cum) return item; }
+    return arr[arr.length-1];
+  }
+
+  // Toast & Modal
+  function showToast(msg){ const el=document.createElement('div'); el.className='toast'; el.textContent=msg; document.getElementById('toastContainer').appendChild(el); setTimeout(()=>el.remove(),2000); }
   function modal(title,body,btns=[],showClose=true){
     const mc=document.getElementById('modalContainer');
     const closeHtml = showClose ? '<button class="close-btn" onclick="closeModal()">✖</button>' : '';
@@ -355,10 +463,10 @@
   // Guest reminder
   function showGuestReminder(){
     if(!GS.isGuest) return;
-    modal('⚠️ Внимание', '<p>Пожалуйста авторизуйтесь на сайте.<br>Гостевой прогресс не сохраняется.</p>',
-      [{ id:'login', text:'Вход/Регистрация', cls:'btn-accent', cb:()=> navigate('profile') }], true);
+    modal('⚠️ Внимание', '<p>Пожалуйста авторизуйтесь.<br>Гостевой прогресс не сохраняется.</p>',
+      [{ id:'login', text:'Вход/Регистрация', cls:'btn-accent', cb: ()=> navigate('profile') }], true);
   }
-  setInterval(showGuestReminder, 180000); // каждые 3 минуты
+  setInterval(showGuestReminder, 180000);
 
   // Navigation
   let currentPage='home';
@@ -379,8 +487,21 @@
     updateUI();
   }
 
+  // Sell functions
+  function sellGift(uid){ const i=GS.inventory.findIndex(g=>g.uid===uid); if(i>=0){ GS.stars += GS.inventory[i].price; GS.totalStarsEarned += GS.inventory[i].price; GS.inventory.splice(i,1); checkQuest('sell_gift'); save(); updateUI(); } }
+
+  function sellAll(){
+    confirmAction('Продать ВСЕ предметы из инвентаря?', ()=>{
+      GS.stars += GS.inventory.reduce((s,g)=>s+g.price,0);
+      GS.totalStarsEarned += GS.inventory.reduce((s,g)=>s+g.price,0);
+      GS.inventory = [];
+      save(); updateUI(); render('inventory');
+    });
+  }
+
+  // Pages
   function homePage(c){
-    c.innerHTML=`<h3>▣ Кейсы</h3><div class="grid">${CASE_TYPES.map(cfg=>`<div class="card" id="caseCard_${cfg.id}"><span class="info-btn" onclick="event.stopPropagation();showCaseInfo('${cfg.id}')">i</span><div class="case-icon">${cfg.icon}</div><b style="font-size:0.65rem;">${cfg.name}</b><br><small>${cfg.cost===0?'Бесплатно':cfg.cost+'$'}</small><br><button class="btn btn-accent btn-sm" onclick="openCaseUI('${cfg.id}','caseCard_${cfg.id}')">Открыть</button></div>`).join('')}</div>`;
+    c.innerHTML=`<h3>Кейсы</h3><div class="grid">${CASE_TYPES.map(cfg=>`<div class="card" id="caseCard_${cfg.id}"><span class="info-btn" onclick="event.stopPropagation();showCaseInfo('${cfg.id}')">i</span><div class="case-icon">${cfg.icon}</div><b style="font-size:0.65rem;">${cfg.name}</b><br><small>${cfg.cost===0?'Бесплатно':cfg.cost+'$'}</small><br><button class="btn btn-accent btn-sm" onclick="openCaseUI('${cfg.id}','caseCard_${cfg.id}')">Открыть</button></div>`).join('')}</div>`;
   }
   window.showCaseInfo = (id)=>{
     const cfg = CASE_TYPES.find(c=>c.id===id);
@@ -398,52 +519,77 @@
     sfxOpen();
     setTimeout(()=>{
       modal('Результат', `<div style="font-size:40px;">${res.gift.icon}</div><b>${res.gift.name}</b><p>${res.gift.rarity} | ${res.gift.price}$</p>`, [
-        {id:'sell',text:'Продать',cls:'btn-accent',cb:()=>{ sellGift(res.gift.uid); render('inventory'); }},
+        {id:'sell',text:'Продать',cls:'btn-accent',cb:()=>{ confirmAction(`Продать ${res.gift.name} за ${res.gift.price}$?`, ()=>{ sellGift(res.gift.uid); }); }},
         {id:'keep',text:'Оставить',cb:()=>sfxSuccess()}
       ]);
     }, 700);
   };
 
-  function sellGift(uid){ const i=GS.inventory.findIndex(g=>g.uid===uid); if(i>=0){ GS.stars += GS.inventory[i].price; GS.totalStarsEarned += GS.inventory[i].price; GS.inventory.splice(i,1); checkQuest('sell_gift'); save(); updateUI(); } }
   function invPage(c){
-    c.innerHTML=`<h3>⊡ Инвентарь (${GS.inventory.length})</h3><button class="btn btn-sm" onclick="sellAll()">Продать всё</button><div class="grid">${GS.inventory.map(g=>`<div class="card"><div class="gift-icon">${g.icon}</div>${g.name}<br><small style="color:#aaa;">${g.price}$</small><br><button class="btn btn-sm" onclick="sellGift('${g.uid}');render('inventory')">Продать</button></div>`).join('')}</div>`;
+    c.innerHTML = `<div class="inventory-container"><h3>Инвентарь</h3><button class="btn btn-sm sell-all-btn" onclick="sellAll()">Продать всё</button><div class="grid">${GS.inventory.map(g=>`<div class="card"><div class="gift-icon">${g.icon}</div>${g.name}<br><small style="color:#aaa;">${g.price}$</small><br><button class="btn btn-sm" onclick="confirmAction('Продать ${g.name}?', ()=>{ sellGift('${g.uid}'); render('inventory'); })">Продать</button></div>`).join('')}</div></div>`;
   }
-  window.sellAll=()=>{ GS.stars += GS.inventory.reduce((s,g)=>s+g.price,0); GS.totalStarsEarned += GS.inventory.reduce((s,g)=>s+g.price,0); GS.inventory=[]; save(); updateUI(); render('inventory'); };
 
   function upgPage(c){
-    c.innerHTML=`<h3>△ Апгрейд</h3><p>Выберите предмет и цель дороже</p><div class="grid">${GS.inventory.map(g=>`<div class="card" onclick="selectUpgGift('${g.uid}')"><div class="gift-icon">${g.icon}</div>${g.name}<br><small>${g.price}$</small></div>`).join('')}</div>`;
-    window._upgSource=null;
-    window.selectUpgGift=(uid)=>{
-      const g=GS.inventory.find(x=>x.uid===uid);
-      if(!g) return;
-      if(!window._upgSource){ window._upgSource=g; showToast(`Выбрано: ${g.name}. Теперь цель дороже.`); return; }
-      const res=attemptUpgrade(window._upgSource,g); window._upgSource=null;
-      if(res.error) return showToast('❌ '+res.error);
-      modal('Апгрейд', res.success?`✅ Получен: ${res.gift.icon} ${res.gift.name}`:'❌ Неудача',[{id:'ok',text:'OK',cb:()=>render('upgrade')}]);
-    };
+    c.innerHTML = `<h3>Улучшение</h3><p>Выберите предмет-жертву из инвентаря, затем цель из каталога (дороже).</p><div class="grid">${GS.inventory.map(g=>`<div class="card" onclick="selectUpgradeSource('${g.uid}')"><div class="gift-icon">${g.icon}</div>${g.name}<br><small>${g.price}$</small></div>`).join('')}</div>`;
+    window._upgradeSource = null;
   }
+  window.selectUpgradeSource = (uid) => {
+    const gift = GS.inventory.find(g=>g.uid===uid);
+    if(!gift) return;
+    window._upgradeSource = gift;
+    // show target selection modal with list of all items more expensive
+    const candidates = GIFT_POOL.filter(g=>g.price > gift.price);
+    if(candidates.length===0) return showToast('Нет предметов дороже');
+    let listHtml = candidates.map(g=>`<div class="card" style="margin:4px;cursor:pointer;" onclick="selectUpgradeTarget('${g.id}')">${g.icon} ${g.name} (${g.price}$)</div>`).join('');
+    modal('Выберите цель', `<div style="max-height:300px;overflow-y:auto;">${listHtml}</div>`, [{id:'cancel',text:'Отмена',cb:()=>{}}]);
+  };
+  window.selectUpgradeTarget = (targetId) => {
+    const target = GIFT_POOL.find(g=>g.id===targetId);
+    if(!target || !window._upgradeSource) return;
+    closeModal();
+    const source = window._upgradeSource;
+    const chance = Math.min(90, Math.floor((source.price / target.price)*100));
+    confirmAction(`Улучшить ${source.name} (${source.price}$) → ${target.name} (${target.price}$)? Шанс: ${chance}%`, ()=>{
+      const res = attemptUpgrade(source, target);
+      window._upgradeSource = null;
+      if(res.error) showToast('❌ '+res.error);
+      else if(res.success) { sfxSuccess(); showToast(`✅ Получен: ${res.gift.name}`); }
+      else { showToast('❌ Неудача'); }
+      render('upgrade');
+    });
+  };
 
   function fusePage(c){
-    const grp={}; GS.inventory.forEach(g=>{ if(!grp[g.id]) grp[g.id]={...g,cnt:0}; grp[g.id].cnt++; });
-    const fus=Object.values(grp).filter(g=>g.cnt>=5);
-    c.innerHTML=`<h3>◈ Fuse</h3>${fus.map(g=>`<div class="card">${g.icon} ${g.name} x${g.cnt} <button class="btn btn-accent btn-sm" onclick="fuse('${g.id}')">Создать</button></div>`).join('')}<hr><b>Карточки (${GS.cardInventory.length})</b><div class="grid">${GS.cardInventory.map(c=>`<div class="card">${c.giftName}<br>${c.bgName} | ${c.finalPrice} *</div>`).join('')}</div>`;
-    window.fuse=(id)=>{ const m=GS.inventory.filter(g=>g.id===id).slice(0,5); GS.inventory=GS.inventory.filter(g=>!m.map(x=>x.uid).includes(g.uid)); const card={uid:'c'+Date.now(),giftName:m[0].name,finalPrice:m[0].price,bgName:'Обычный',bgCol:'#888'}; GS.cardInventory.push(card); save(); updateUI(); sfxSuccess(); render('fuse'); };
+    const group = {};
+    GS.inventory.forEach(g=>{ if(!group[g.id]) group[g.id] = {gift:g, count:0}; group[g.id].count++; });
+    const fusible = Object.values(group).filter(g=>g.count>=5);
+    c.innerHTML = `<h3>Fuse</h3>${fusible.map(g=>`<div class="card">${g.gift.icon} ${g.gift.name} x${g.count} <button class="btn btn-accent btn-sm" onclick="confirmAction('Объединить 5 шт?', ()=>{ const r = fuseGifts('${g.gift.id}'); if(r.error) showToast(r.error); else { sfxSuccess(); showToast('✅ Карточка создана'); render('fuse'); } })">Создать</button></div>`).join('')}<hr><b>Карточки (${GS.cardInventory.length})</b><div class="grid">${GS.cardInventory.map(c=>`<div class="card">${c.giftName}<br>${c.bgName} x${c.bgMult} | ${c.patternName} x${c.patternMult}<br><b>${c.finalPrice} *</b></div>`).join('')}</div>`;
   }
 
   function bpPage(c){
-    const uncl=GS.bpClaimed.map((cl,i)=>i<=GS.bpLevel&&i>0&&!cl);
-    c.innerHTML=`<h3>▨ BattlePass · Ур.${GS.bpLevel}</h3><div class="bp-track">${Array.from({length:100},(_,i)=>`<div class="bp-seg ${i+1<GS.bpLevel?'reached':''} ${i+1===GS.bpLevel?'current':''} ${uncl[i+1]?'claimable':''} ${GS.bpClaimed[i+1]?'claimed':''}" onclick="claimBP(${i+1})"><span class="reward-icon">${(i+1)%10===0?'*':(i+1)%5===0?'🎁':'$'}</span>${i+1}</div>`).join('')}</div><p>${GS.bpExp} / ${350+GS.bpLevel*55} EXP</p>`;
+    const unclaimed = GS.bpClaimed.map((cl,i)=> i<=GS.bpLevel && i>0 && !cl);
+    c.innerHTML = `<h3>BattlePass</h3><div class="bp-track">${Array.from({length:100},(_,i)=> {
+      let cls = '';
+      if(i+1 < GS.bpLevel) cls = 'reached';
+      if(i+1 === GS.bpLevel) cls = 'current';
+      if(unclaimed[i+1]) cls += ' claimable';
+      if(GS.bpClaimed[i+1]) cls += ' claimed';
+      return `<div class="bp-seg ${cls}" onclick="claimBP(${i+1})"><span class="reward-icon">${(i+1)%10===0?'*':(i+1)%5===0?'🎁':'$'}</span>${i+1}</div>`;
+    }).join('')}</div><p>${GS.bpExp} / ${350+GS.bpLevel*55} EXP</p>`;
   }
 
   function questPage(c){
-    c.innerHTML=`<h3>◷ Задания</h3>${GS.activeQuests.map((q,i)=>`<div class="card" style="opacity:${q.progress>=q.target?1:0.7};cursor:pointer;" onclick="completeQuest(${i})">${q.progress>=q.target?'✅':''} ${q.desc} (${q.progress}/${q.target}) +${q.reward.stars}$</div>`).join('')}`;
+    c.innerHTML = `<h3>Задания</h3>${GS.activeQuests.map((q,i)=> {
+      let completed = q.progress >= q.target;
+      return `<div class="card ${completed?'quest-completed':''}" style="cursor:pointer;" onclick="completeQuest(${i})">${completed?'✔':''} ${q.desc} (${q.progress}/${q.target}) +${q.reward.stars}$</div>`;
+    }).join('')}`;
   }
 
   function idxPage(c){
-    c.innerHTML=`<h3>▦ Индекс (${Object.keys(GS.collectibles).length}/${GIFT_POOL.length})</h3><div class="grid">${GIFT_POOL.map(g=>`<div class="card" style="opacity:${GS.collectibles[g.id]?1:0.3};">${g.icon}<br>${GS.collectibles[g.id]?g.name:'???'}</div>`).join('')}</div>`;
+    c.innerHTML=`<h3>Индекс</h3><div class="grid">${GIFT_POOL.map(g=>`<div class="card" style="opacity:${GS.collectibles[g.id]?1:0.3};">${g.icon}<br>${GS.collectibles[g.id]?g.name:'???'}</div>`).join('')}</div>`;
   }
 
-  // Chat (online simulation)
+  // Chat (with link filter)
   const chatMessages=[];
   let ws;
   function connectChat(){
@@ -451,6 +597,11 @@
     try{ ws = new WebSocket(`${protocol}//${location.host}/ws`); ws.onmessage=e=>{ chatMessages.push(JSON.parse(e.data)); if(currentPage==='chat') render('chat'); }; ws.onclose=()=>setTimeout(connectChat,3000); }catch(e){ setTimeout(connectChat,3000); }
   }
   function sendMsg(text){
+    // Filter links
+    if(/https?:\/\//i.test(text) || /www\./i.test(text)) {
+      text = '[ссылка скрыта]';
+      showToast('⚠️ Ссылки запрещены в чате');
+    }
     if(ws&&ws.readyState===WebSocket.OPEN) ws.send(JSON.stringify({nick:GS.nickname||'Гость',text}));
     else{ chatMessages.push({nick:GS.nickname||'Гость',text}); if(currentPage==='chat') render('chat'); }
   }
@@ -461,39 +612,49 @@
   window.sendChat=()=>{ const inp=document.getElementById('chatInput'); if(inp.value.trim()){ sendMsg(inp.value.trim()); inp.value=''; render('chat'); } };
 
   function profilePage(c){
-    c.innerHTML = `<h3>👤 Профиль</h3>
-    <div class="card" style="margin-bottom:10px;"><b>Никнейм:</b> ${GS.isGuest?'Гость':GS.nickname}</div>
+    c.innerHTML = `<h3>Профиль</h3>
+    <div class="card"><b>Никнейм:</b> ${GS.isGuest?'Гость':GS.nickname}</div>
     <div class="card"><h4>Статистика</h4>
       <div class="stat-item"><span>Открыто кейсов</span><span>${GS.totalCasesOpened||0}</span></div>
       <div class="stat-item"><span>Всего заработано $</span><span>${GS.totalStarsEarned}</span></div>
       <div class="stat-item"><span>Всего заработано *</span><span>${GS.totalTonEarned}</span></div>
     </div>
     ${GS.isGuest?`
-    <div class="card" style="margin-top:10px;"><h4>Регистрация</h4><input id="regNick" placeholder="Никнейм"><input id="regPass1" type="password" placeholder="Пароль"><input id="regPass2" type="password" placeholder="Повторите пароль"><button class="btn btn-accent btn-sm" onclick="doRegister()">Создать</button></div>
-    <div class="card" style="margin-top:10px;"><h4>Вход</h4><input id="loginNick" placeholder="Никнейм"><input id="loginPass" type="password" placeholder="Пароль"><button class="btn btn-accent btn-sm" onclick="doLogin()">Войти</button></div>
-    `:`<button class="btn" onclick="logout()">Выйти</button>`}`;
+    <div class="card"><h4>Регистрация</h4><input id="regNick" placeholder="Никнейм"><input id="regPass1" type="password" placeholder="Пароль"><input id="regPass2" type="password" placeholder="Повторите пароль"><button class="btn btn-accent btn-sm" onclick="doRegister()">Создать</button></div>
+    <div class="card"><h4>Вход</h4><input id="loginNick" placeholder="Никнейм"><input id="loginPass" type="password" placeholder="Пароль">${GS.twoFactorEnabled?'<input id="login2fa" placeholder="2FA код">':''}<button class="btn btn-accent btn-sm" onclick="doLogin()">Войти</button></div>
+    `:`<button class="btn" onclick="logout()">Выйти</button>
+    <div class="card"><label><input type="checkbox" id="twofaCheck" ${GS.twoFactorEnabled?'checked':''} onclick="toggle2FA()"> Включить двухфакторную аутентификацию</label></div>`}`;
   }
   window.doRegister = ()=>{
     const nick = document.getElementById('regNick')?.value.trim();
     const p1 = document.getElementById('regPass1')?.value;
     const p2 = document.getElementById('regPass2')?.value;
     if(!nick||nick.length<3) return showToast('Никнейм от 3 символов');
-    if(p1.length<4||p1!==p2) return showToast('Пароли не совпадают или короткие');
+    if(p1.length<4||p1!==p2) return showToast('Пароли не совпадают');
     GS.nickname = nick; GS.isGuest = false; save(); updateUI(); showToast('✅ Аккаунт создан!'); render('profile');
   };
   window.doLogin = ()=>{
     const nick = document.getElementById('loginNick')?.value.trim();
     const pass = document.getElementById('loginPass')?.value;
     if(!nick||!pass) return showToast('Заполните поля');
+    if(GS.twoFactorEnabled){
+      const code = document.getElementById('login2fa')?.value;
+      if(code !== GS.twoFactorCode) return showToast('Неверный 2FA код');
+    }
     GS.nickname = nick; GS.isGuest = false; save(); updateUI(); showToast('✅ Вход выполнен!'); render('profile');
+  };
+  window.toggle2FA = ()=>{
+    GS.twoFactorEnabled = !GS.twoFactorEnabled;
+    if(GS.twoFactorEnabled){
+      GS.twoFactorCode = Math.random().toString(36).slice(2,8);
+      alert(`Ваш секретный код 2FA: ${GS.twoFactorCode}. Сохраните его!`);
+    } else { GS.twoFactorCode = ''; }
+    save();
+    render('profile');
   };
   window.logout = ()=>{ GS.isGuest=true; GS.nickname=''; save(); updateUI(); showToast('Вы вышли'); render('profile'); };
 
-  // Init navigation listeners
-  document.querySelectorAll('nav button').forEach(b => {
-    b.addEventListener('click', () => navigate(b.dataset.page));
-  });
-
+  document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', ()=> navigate(b.dataset.page)));
   connectChat();
   updateUI();
   navigate('home');
